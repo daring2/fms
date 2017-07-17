@@ -1,0 +1,3 @@
+include 'common', 'zabbix', 'sandbox'
+
+rootProject.name = 'mon-root'
