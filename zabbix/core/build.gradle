@@ -1,1 +1,5 @@
-archivesBaseName = 'zabbix-core'
+archivesBaseName = 'fms-zabbix-core'
+
+dependencies {
+    compile project(':common')
+}
