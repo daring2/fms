@@ -17,7 +17,6 @@ subprojects {
 
     group = 'com.gitlab.daring.monitoring'
     buildDir = 'target'
-    archivesBaseName = 'mon-' + archivesBaseName
 
     compileJava.options.encoding = 'UTF-8'
 

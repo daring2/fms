@@ -1,3 +1,4 @@
-include 'common', 'zabbix', 'sandbox'
+include 'common', 'sandbox'
+include 'zabbix/core'
 
 rootProject.name = 'mon-root'
