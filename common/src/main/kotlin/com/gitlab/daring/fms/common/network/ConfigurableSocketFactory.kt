@@ -8,7 +8,7 @@ import java.net.Socket
 import java.net.SocketAddress
 import javax.net.SocketFactory
 
-class ConfigurableSocketFactory(
+open class ConfigurableSocketFactory(
         val connectTimeout: Int,
         val readTimeout: Int
 ): SocketFactory() {
@@ -37,13 +37,15 @@ class ConfigurableSocketFactory(
     }
 
     protected fun createSocket(address: SocketAddress, localAddress: SocketAddress?): Socket {
-        val socket = Socket()
+        val socket = newSocket()
         socket.soTimeout = readTimeout
         if (localAddress != null)
             socket.bind(localAddress)
         socket.connect(address, connectTimeout)
         return socket
     }
+
+    protected open fun newSocket() = Socket()
 
     protected fun newSocketAddress(host: String?, port: Int): InetSocketAddress {
         return if (host != null) {
