@@ -8,7 +8,7 @@ import java.net.Socket
 import java.net.SocketAddress
 import javax.net.SocketFactory
 
-open class ConfigurableSocketFactory(
+open class SocketProviderImpl(
         val connectTimeout: Int,
         val readTimeout: Int
 ): SocketFactory(), SocketProvider {
