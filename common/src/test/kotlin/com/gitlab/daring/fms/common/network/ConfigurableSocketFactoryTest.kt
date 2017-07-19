@@ -1,5 +1,6 @@
 package com.gitlab.daring.fms.common.network
 
+import org.junit.Assert.*
 import org.junit.Test
 import org.mockito.Mockito.*
 import java.net.InetAddress
@@ -19,7 +20,7 @@ class ConfigurableSocketFactoryTest {
 
         val s2 = tf.createSocket(null as String?, 1)
         verify(s2).soTimeout = 101
-        verify(s2).connect(tf.nullAddress(1), 100)
+        verify(s2).connect(tf.newAddress(null, 1), 100)
         verifyNoMoreInteractions(s2)
 
         val lh =  InetAddress.getLocalHost()
@@ -32,11 +33,19 @@ class ConfigurableSocketFactoryTest {
         //TODO extend
     }
 
+    @Test
+    fun testNewSocketAddress() {
+        val tf = TestSocketFactory()
+        assertEquals(InetSocketAddress("h1", 1), tf.newAddress("h1", 1))
+        val nullAddress = InetAddress.getByName(null)
+        assertEquals(InetSocketAddress(nullAddress, 1), tf.newAddress(null, 1))
+    }
+
     class TestSocketFactory: ConfigurableSocketFactory(100, 101) {
 
         override fun newSocket() = mock(Socket::class.java)
 
-        fun nullAddress(port: Int) = newSocketAddress(null, port)
+        fun newAddress(host: String?, port: Int) = newSocketAddress(host, port)
 
     }
 
