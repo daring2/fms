@@ -1,10 +1,12 @@
 package com.gitlab.daring.zabbix.sender
 
-import com.gitlab.daring.fms.common.network.SocketProviderImpl
 import com.gitlab.daring.fms.common.network.SocketProvider
+import com.gitlab.daring.fms.common.network.SocketProviderImpl
 import com.typesafe.config.Config
 
 interface ZabbixSender {
+
+    fun send(req: SendRequest): SendResult
 
 }
 
@@ -16,4 +18,7 @@ class ZabbixSenderImpl(
 
     constructor(c: Config) : this(c.getString("host"), c.getInt("port"))
 
+    override fun send(req: SendRequest): SendResult {
+        TODO("not implemented")
+    }
 }
