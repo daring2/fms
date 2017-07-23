@@ -9,7 +9,7 @@ import java.net.SocketAddress
 import javax.net.SocketFactory
 
 /**
- * Implementation of [SocketProvider] and [SocketFactory] with configurable timeouts.
+ * Configurable implementation of [SocketProvider] and [SocketFactory].
  */
 open class SocketProviderImpl(
         val connectTimeout: Int,
