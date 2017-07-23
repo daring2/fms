@@ -8,6 +8,9 @@ import java.net.Socket
 import java.net.SocketAddress
 import javax.net.SocketFactory
 
+/**
+ * Implementation of [SocketProvider] and [SocketFactory] with configurable timeouts.
+ */
 open class SocketProviderImpl(
         val connectTimeout: Int,
         val readTimeout: Int
