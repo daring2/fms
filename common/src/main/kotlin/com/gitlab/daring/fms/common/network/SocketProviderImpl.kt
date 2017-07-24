@@ -14,9 +14,9 @@ import javax.net.SocketFactory
 open class SocketProviderImpl(
         val connectTimeout: Int,
         val readTimeout: Int
-): SocketFactory(), SocketProvider {
+) : SocketFactory(), SocketProvider {
 
-    constructor(c: Config):  this(
+    constructor(c: Config) : this(
             c.getMillis("connectTimeout").toInt(),
             c.getMillis("readTimeout").toInt()
     )
