@@ -25,6 +25,11 @@ class ZabbixSender(
         }
     }
 
+    fun send(v: ItemValue): SendResult {
+        val req = SendRequest(listOf(v))
+        return send(req)
+    }
+
     private fun parseResult(bs: ByteArray): SendResult {
         if (bs.size < HeaderSize)
             throw RuntimeException("invalid result")
