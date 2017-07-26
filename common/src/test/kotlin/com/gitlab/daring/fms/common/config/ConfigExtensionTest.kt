@@ -13,4 +13,21 @@ class ConfigExtensionTest {
         assertEquals(600000, configFromString("p=10m").getMillis("p"))
     }
 
+    @Test
+    fun testToMap() {
+        val c1 = configFromString("p1=v1,p2=2")
+        assertEquals(hashMapOf("p1" to "v1", "p2" to 2), c1.toMap())
+    }
+
+    @Test
+    fun testGetBean() {
+        val c1 = configFromString("p1 { p1=v1,p2=2 }")
+        assertEquals(TestBean("v1", 2), c1.getBean<TestBean>("p1"))
+    }
+
 }
+
+data class TestBean(
+        val p1: String,
+        val p2: Int
+)
