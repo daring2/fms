@@ -2,4 +2,5 @@ archivesBaseName = 'fms-zabbix-core'
 
 dependencies {
     compile project(':common')
+    compile "com.squareup.okhttp3:okhttp:3.8.1"
 }
