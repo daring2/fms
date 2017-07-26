@@ -25,8 +25,8 @@ class ZabbixSender(
         }
     }
 
-    fun send(v: ItemValue): SendResult {
-        val req = SendRequest(listOf(v))
+    fun send(vararg vs: ItemValue): SendResult {
+        val req = SendRequest(listOf(*vs))
         return send(req)
     }
 
