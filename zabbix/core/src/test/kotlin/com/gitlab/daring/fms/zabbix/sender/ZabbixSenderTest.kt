@@ -1,4 +1,4 @@
-package com.gitlab.daring.zabbix.sender
+package com.gitlab.daring.fms.zabbix.sender
 
 import com.gitlab.daring.fms.common.json.JsonUtils.JsonMapper
 import com.gitlab.daring.fms.common.network.SocketProvider

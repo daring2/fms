@@ -1,4 +1,4 @@
-package com.gitlab.daring.zabbix.sender
+package com.gitlab.daring.fms.zabbix.sender
 
 data class SendResult(
         val response: String,

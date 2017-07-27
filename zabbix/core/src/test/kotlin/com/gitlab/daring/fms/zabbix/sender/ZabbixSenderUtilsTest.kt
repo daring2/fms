@@ -1,8 +1,8 @@
-package com.gitlab.daring.zabbix.sender
+package com.gitlab.daring.fms.zabbix.sender
 
 import com.gitlab.daring.fms.common.json.JsonUtils.JsonMapper
-import com.gitlab.daring.zabbix.sender.ZabbixSenderUtils.ValueCharMatcher
-import com.gitlab.daring.zabbix.sender.ZabbixSenderUtils.addTimeFields
+import com.gitlab.daring.fms.zabbix.sender.ZabbixSenderUtils.ValueCharMatcher
+import com.gitlab.daring.fms.zabbix.sender.ZabbixSenderUtils.addTimeFields
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.time.Duration

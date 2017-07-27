@@ -1,4 +1,4 @@
-package com.gitlab.daring.zabbix.api
+package com.gitlab.daring.fms.zabbix.api
 
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit.SECONDS

@@ -1,4 +1,4 @@
-package com.gitlab.daring.zabbix.api
+package com.gitlab.daring.fms.zabbix.api
 
 import com.gitlab.daring.fms.common.config.getBean
 import com.gitlab.daring.fms.common.http.HttpUtils.newHttpClient

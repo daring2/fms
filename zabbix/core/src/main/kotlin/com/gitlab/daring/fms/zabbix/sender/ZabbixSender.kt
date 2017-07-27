@@ -1,10 +1,10 @@
-package com.gitlab.daring.zabbix.sender
+package com.gitlab.daring.fms.zabbix.sender
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.gitlab.daring.fms.common.json.JsonUtils.JsonMapper
 import com.gitlab.daring.fms.common.network.SocketProvider
 import com.gitlab.daring.fms.common.network.SocketProviderImpl
-import com.gitlab.daring.zabbix.sender.ZabbixSenderUtils.HeaderSize
+import com.gitlab.daring.fms.zabbix.sender.ZabbixSenderUtils.HeaderSize
 import com.typesafe.config.Config
 
 class ZabbixSender(
