@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.gitlab.daring.fms.common.config.getBean
 import com.gitlab.daring.fms.common.http.HttpUtils.JsonMediaType
 import com.gitlab.daring.fms.common.http.HttpUtils.newHttpClient
+import com.gitlab.daring.fms.common.json.JsonUtils
 import com.typesafe.config.Config
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -17,15 +18,26 @@ class ZabbixApiHelper(
 
     var url = "http://$host/zabbix/api_jsonrpc.php"
 
-    constructor(c: Config): this(
+    internal val authCache = AuthCache(
+            authParams.tokenTimeout.toMillis(),
+            this::login
+    )
+
+    val authToken: String
+        get() = authCache.getToken()
+
+    constructor(c: Config) : this(
             c.getString("host"),
             c.getBean("auth"),
             newHttpClient(c)
     )
 
-    private fun login(): String {
-        val req = ZabbixApiRequest("user.login", authParams.apiParams)
-        return send(req).textValue()
+    fun call(req: ZabbixApiRequest): JsonNode {
+        return send(req.copy(auth = authToken))
+    }
+
+    fun call(method: String, params: Map<String, Any>): JsonNode {
+        return call(ZabbixApiRequest(method, params))
     }
 
     private fun send(req: ZabbixApiRequest): JsonNode {
@@ -33,11 +45,17 @@ class ZabbixApiHelper(
         val r = Request.Builder().url(url).post(rb).build()
         httpClient.newCall(r).execute().use { cr ->
             if (!cr.isSuccessful) throw RuntimeException("code=${cr.code()}")
-            //TODO parse result, check error, update lastAccess time
-            TODO("not implemented")
+            val bs = cr.body()?.byteStream() ?: throw NullPointerException("body")
+            val rn = JsonUtils.JsonMapper.readTree(bs)
+            rn.get("error")?.let { throw RuntimeException("error=$it") }
+            if (req.auth != null) authCache.updateAccessTime()
+            return rn.get("result")
         }
     }
 
-    //TODO implement
+    private fun login(): String {
+        val req = ZabbixApiRequest("user.login", authParams.apiParams)
+        return send(req).textValue()
+    }
 
 }

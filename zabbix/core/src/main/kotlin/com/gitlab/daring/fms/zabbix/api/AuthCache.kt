@@ -19,4 +19,8 @@ internal class AuthCache(
         token
     }
 
+    fun updateAccessTime() {
+        accessTime = currentTime()
+    }
+
 }

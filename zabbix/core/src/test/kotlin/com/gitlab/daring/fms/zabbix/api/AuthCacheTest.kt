@@ -15,7 +15,8 @@ class AuthCacheTest {
         ct = 12
         assertEquals("t12", ac.getToken())
 
-        ac.accessTime = 20
+        ct = 20
+        ac.updateAccessTime()
         ct = 30
         assertEquals("t12", ac.getToken())
         ct = 31
