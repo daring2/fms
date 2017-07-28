@@ -1,5 +1,6 @@
 package com.gitlab.daring.fms.zabbix.sender
 
+import com.gitlab.daring.fms.common.config.ConfigUtils.configFromString
 import com.gitlab.daring.fms.common.json.JsonUtils.JsonMapper
 import com.gitlab.daring.fms.common.network.SocketProvider
 import org.junit.Assert.assertArrayEquals
@@ -10,6 +11,14 @@ import java.io.ByteArrayOutputStream
 import java.net.Socket
 
 class ZabbixSenderTest {
+
+    @Test
+    fun testInit() {
+        val c = configFromString("{host=h1, port=10}")
+        val sender = ZabbixSender(c)
+        assertEquals("h1", sender.host)
+        assertEquals(10, sender.port)
+    }
 
     @Test
     fun testSend() {

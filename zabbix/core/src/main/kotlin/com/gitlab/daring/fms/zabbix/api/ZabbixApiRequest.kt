@@ -10,6 +10,8 @@ data class ZabbixApiRequest(
         val id: Int = 1
 ) {
 
-    fun toBytes() = JsonMapper.writeValueAsBytes(this)
+    fun toBytes(): ByteArray {
+        return JsonMapper.writeValueAsBytes(this)
+    }
 
 }

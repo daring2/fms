@@ -1,7 +1,7 @@
 package com.gitlab.daring.fms.zabbix.api
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.gitlab.daring.fms.common.config.getBean
+import com.gitlab.daring.fms.common.config.toBean
 import com.gitlab.daring.fms.common.http.HttpUtils.JsonMediaType
 import com.gitlab.daring.fms.common.http.HttpUtils.newHttpClient
 import com.gitlab.daring.fms.common.json.JsonUtils
@@ -28,7 +28,7 @@ class ZabbixApiHelper(
 
     constructor(c: Config) : this(
             c.getString("host"),
-            c.getBean("auth"),
+            c.toBean(),
             newHttpClient(c)
     )
 
