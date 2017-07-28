@@ -1,9 +1,11 @@
 package com.gitlab.daring.fms.common.json
 
-import com.fasterxml.jackson.core.JsonParser.Feature.*
-import com.fasterxml.jackson.core.JsonGenerator.Feature.*
+import com.fasterxml.jackson.core.JsonGenerator.Feature.AUTO_CLOSE_TARGET
+import com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_SINGLE_QUOTES
+import com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.*
+import com.fasterxml.jackson.databind.module.SimpleModule
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 
 object JsonUtils {
 
@@ -15,6 +17,13 @@ object JsonUtils {
         m.configure(ALLOW_SINGLE_QUOTES, true)
         m.configure(AUTO_CLOSE_TARGET, false)
         m.registerKotlinModule()
+        m.registerModule(createExtModule())
+        return m
+    }
+
+    fun createExtModule(): SimpleModule {
+        val m = SimpleModule("fmsModule")
+        DurationJsonSupport.register(m)
         return m
     }
 
