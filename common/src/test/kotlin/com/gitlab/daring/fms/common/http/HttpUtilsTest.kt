@@ -10,15 +10,15 @@ class HttpUtilsTest {
     @Test
     fun testNewHttpClient() {
         val c1 = configFromString("" +
-                "connectTimeout=3s," +
-                "readTimeout=4s," +
-                "writeTimeout=5s," +
+                "connectTimeout=1s," +
+                "readTimeout=2s," +
+                "writeTimeout=3s," +
                 "retryOnConnectionFailure=true"
         )
         val hc1 = newHttpClient(c1)
-        assertEquals(3000, hc1.connectTimeoutMillis())
-        assertEquals(4000, hc1.readTimeoutMillis())
-        assertEquals(5000, hc1.writeTimeoutMillis())
+        assertEquals(1000, hc1.connectTimeoutMillis())
+        assertEquals(2000, hc1.readTimeoutMillis())
+        assertEquals(3000, hc1.writeTimeoutMillis())
         assertEquals(true, hc1.retryOnConnectionFailure())
     }
 

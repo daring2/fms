@@ -16,7 +16,10 @@ fun Config.toMap(): Map<String, Any> {
     }.toMap()
 }
 
+inline fun <reified T: Any> Config.toBean(): T {
+    return JsonMapper.convertValue(toMap())
+}
+
 inline fun <reified T: Any> Config.getBean(path: String): T {
-    val m = getConfig(path).toMap()
-    return JsonMapper.convertValue(m)
+    return getConfig(path).toBean()
 }
