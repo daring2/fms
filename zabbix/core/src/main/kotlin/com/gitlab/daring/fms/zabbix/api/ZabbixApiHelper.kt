@@ -41,7 +41,7 @@ class ZabbixApiHelper(
     }
 
     private fun send(req: ZabbixApiRequest): JsonNode {
-        val rb = RequestBody.create(JsonMediaType, req.toBytes())
+        val rb = RequestBody.create(JsonMediaType, req.toJsonBytes())
         val r = Request.Builder().url(url).post(rb).build()
         httpClient.newCall(r).execute().use { cr ->
             if (!cr.isSuccessful) throw RuntimeException("code=${cr.code()}")

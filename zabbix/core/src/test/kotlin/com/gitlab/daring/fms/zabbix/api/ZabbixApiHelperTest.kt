@@ -28,7 +28,15 @@ class ZabbixApiHelperTest {
 
     @Test
     fun testCall() {
-        //TODO implement
+        val mhc = MockHttpClient()
+        mhc.expUrl = "http://h1/zabbix/api_jsonrpc.php"
+        mhc.addResponse(200, "{result: 'a1'}")
+        mhc.addResponse(200, "{result: 'r1'}")
+        val h = ZabbixApiHelper("h1", AuthParams("u1", "p1"), mhc.client)
+        val r1 = h.call("m1", mapOf("p1" to "v1"))
+        mhc.assertRequest("user.login", null, "user" to "u1", "password" to "p1")
+        mhc.assertRequest("m1", "a1", "p1" to "v1")
+        assertEquals("r1", r1.textValue())
     }
 
 }
