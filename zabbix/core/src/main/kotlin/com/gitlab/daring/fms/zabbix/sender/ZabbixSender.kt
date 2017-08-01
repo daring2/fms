@@ -11,9 +11,10 @@ class ZabbixSender(
         val host: String,
         val port: Int = 10051,
         val socketProvider: SocketProvider = SocketProviderImpl(3000, 10000)
-)  {
+) {
 
-    constructor(c: Config) : this(c.getString("host"), c.getInt("port"))
+    constructor(c: Config) :
+            this(c.getString("host"), c.getInt("port"), SocketProviderImpl(c))
 
     fun send(req: SendRequest): SendResult {
         val socket = socketProvider.createSocket(host, port)
@@ -21,7 +22,7 @@ class ZabbixSender(
             val rn = req.buildJson()
             JsonMapper.writeValue(socket.getOutputStream(), rn)
             val rbs = socket.getInputStream().readBytes()
-            return parseResult(rbs)
+            return parseResponse(rbs)
         }
     }
 
@@ -30,9 +31,9 @@ class ZabbixSender(
         return send(req)
     }
 
-    private fun parseResult(bs: ByteArray): SendResult {
+    private fun parseResponse(bs: ByteArray): SendResult {
         if (bs.size < HeaderSize)
-            throw RuntimeException("invalid result")
+            throw RuntimeException("invalid response")
         val str = String(bs, HeaderSize, bs.size - HeaderSize, Charsets.UTF_8)
         return JsonMapper.readValue(str)
     }
