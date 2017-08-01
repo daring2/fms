@@ -1,8 +1,8 @@
 package com.gitlab.daring.fms.zabbix.api
 
 import com.gitlab.daring.fms.common.config.ConfigUtils.configFromString
+import com.gitlab.daring.fms.zabbix.util.ZabbixTestUtils.assertError
 import org.junit.Assert.assertEquals
-import org.junit.Assert.fail
 import org.junit.Test
 import java.time.Duration
 
@@ -50,11 +50,4 @@ class ZabbixApiHelperTest {
         assertError("error=\"err1\"") { h.call("m1", mapOf()) }
     }
 
-    fun assertError(error: String, func: () -> Unit) {
-        try {
-            func(); fail()
-        } catch (e: Exception) {
-            assertEquals(error, e.message)
-        }
-    }
 }
