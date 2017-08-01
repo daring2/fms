@@ -2,6 +2,8 @@ package com.gitlab.daring.fms.zabbix.agent
 
 import com.gitlab.daring.fms.common.network.SocketProvider
 import com.gitlab.daring.fms.common.network.SocketProviderImpl
+import com.gitlab.daring.fms.zabbix.model.Item
+import com.gitlab.daring.fms.zabbix.model.ItemValue
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.HeaderSize
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.ZbxError
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.ZbxNotSupported
@@ -17,28 +19,33 @@ class ZabbixAgentClient(
             this(c.getString("host"), c.getInt("port"), SocketProviderImpl(c))
 
 
-    fun request(itemKey: String): String {
+    fun request(item: Item): ItemValue {
         val socket = socketProvider.createSocket(host, port)
         socket.use {
-            val req = "$itemKey\n".toByteArray(Charsets.UTF_8)
+            val req = "${item.key}\n".toByteArray(Charsets.UTF_8)
             socket.getOutputStream().write(req)
             val rbs = socket.getInputStream().readBytes()
-            return parseResponse(rbs)
+            return parseResponse(item, rbs)
         }
     }
 
+    fun request(itemKey: String) : ItemValue {
+        return request(Item(itemKey))
+    }
 
-    private fun parseResponse(bs: ByteArray): String {
+    private fun parseResponse(item: Item, bs: ByteArray): ItemValue {
         if (bs.size < HeaderSize)
             throw RuntimeException("invalid response")
         val str = String(bs, HeaderSize, bs.size - HeaderSize, Charsets.UTF_8)
         if (str == ZbxError)
             throw RuntimeException(str)
+        val iv = ItemValue("", item.key, str)
         if (str.startsWith(ZbxNotSupported)) {
             val error = str.substring(ZbxNotSupported.length)
-            throw ZabbixNotSupportedException(error)
+            return iv.copy(value = error, isError = true)
+        }  else {
+            return iv
         }
-        return str
     }
 
 }

@@ -1,4 +1,4 @@
-package com.gitlab.daring.fms.zabbix.sender
+package com.gitlab.daring.fms.zabbix.model
 
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.gitlab.daring.fms.common.json.JsonUtils.JsonMapper

@@ -2,6 +2,7 @@ package com.gitlab.daring.fms.zabbix.sender
 
 import org.junit.Assert.*
 import com.gitlab.daring.fms.common.json.*
+import com.gitlab.daring.fms.zabbix.model.ItemValue
 import org.junit.Test
 import java.time.Duration
 

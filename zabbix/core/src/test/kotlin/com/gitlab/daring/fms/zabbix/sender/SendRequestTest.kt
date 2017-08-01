@@ -2,6 +2,7 @@ package com.gitlab.daring.fms.zabbix.sender
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.gitlab.daring.fms.common.json.JsonUtils.JsonMapper
+import com.gitlab.daring.fms.zabbix.model.ItemValue
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.time.Duration

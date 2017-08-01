@@ -4,6 +4,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.gitlab.daring.fms.common.json.JsonUtils.JsonMapper
 import com.gitlab.daring.fms.common.network.SocketProvider
 import com.gitlab.daring.fms.common.network.SocketProviderImpl
+import com.gitlab.daring.fms.zabbix.model.ItemValue
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.HeaderSize
 import com.typesafe.config.Config
 

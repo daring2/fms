@@ -4,6 +4,8 @@ import com.gitlab.daring.fms.common.config.ConfigUtils.configFromString
 import com.gitlab.daring.fms.common.json.JsonUtils.JsonMapper
 import com.gitlab.daring.fms.common.network.SocketProvider
 import com.gitlab.daring.fms.common.network.SocketProviderImpl
+import com.gitlab.daring.fms.zabbix.model.ItemValue
+import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.HeaderSize
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -50,7 +52,7 @@ class ZabbixSenderTest {
     }
 
     fun mockInputStream(s: Socket, r: SendResult) {
-        val str = "0".repeat(13) + JsonMapper.writeValueAsString(r)
+        val str = "0".repeat(HeaderSize) + JsonMapper.writeValueAsString(r)
         `when`(s.getInputStream()).thenReturn(str.byteInputStream())
     }
 
