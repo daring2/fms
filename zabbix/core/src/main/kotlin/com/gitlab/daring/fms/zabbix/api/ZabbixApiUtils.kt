@@ -3,7 +3,7 @@ package com.gitlab.daring.fms.zabbix.api
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit.SECONDS
 
-object ZabbixApiUtils {
+internal object ZabbixApiUtils {
 
     val DefaultHttpClient = createDefaultHttpClient()
 

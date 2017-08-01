@@ -8,7 +8,7 @@ import java.time.Duration
 internal object ZabbixSenderUtils {
 
     val ValueCharMatcher = CharMatcher.javaIsoControl().and(CharMatcher.whitespace().negate())
-    val HeaderSize = 13
+
 
     /**
      * Removes unsupported chars from value string
