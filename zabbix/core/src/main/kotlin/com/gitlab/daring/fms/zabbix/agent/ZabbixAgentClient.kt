@@ -36,7 +36,7 @@ class ZabbixAgentClient(
     private fun parseResponse(item: Item, bs: ByteArray): ItemValue {
         if (bs.size < HeaderSize)
             throw RuntimeException("invalid response")
-        val str = String(bs, HeaderSize, bs.size - HeaderSize, Charsets.UTF_8)
+        val str = String(bs, HeaderSize, bs.size - HeaderSize, item.charset)
         if (str == ZbxError)
             throw RuntimeException(str)
         val iv = ItemValue("", item.key, str)

@@ -2,5 +2,9 @@ package com.gitlab.daring.fms.zabbix.model
 
 data class Item(
         val key: String,
-        val charset: String = "UTF-8"
-)
+        val charsetName: String = "UTF-8"
+) {
+
+    val charset = charset(charsetName)
+    
+}
