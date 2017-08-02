@@ -1,12 +1,12 @@
-package com.gitlab.daring.fms.zabbix.agent
+package com.gitlab.daring.fms.zabbix.agent.passive
 
 import com.gitlab.daring.fms.common.network.SocketProvider
 import com.gitlab.daring.fms.common.network.SocketProviderImpl
 import com.gitlab.daring.fms.zabbix.model.Item
 import com.gitlab.daring.fms.zabbix.model.ItemValue
-import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.HeaderSize
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.ZbxError
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.ZbxNotSupported
+import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.parseResponse
 import com.typesafe.config.Config
 
 class AgentPassiveClient(
@@ -25,7 +25,7 @@ class AgentPassiveClient(
             val req = "${item.key}\n".toByteArray(Charsets.UTF_8)
             socket.getOutputStream().write(req)
             val rbs = socket.getInputStream().readBytes()
-            return parseResponse(item, rbs)
+            return processResponse(item, rbs)
         }
     }
 
@@ -33,10 +33,8 @@ class AgentPassiveClient(
         return request(Item(itemKey))
     }
 
-    private fun parseResponse(item: Item, bs: ByteArray): ItemValue {
-        if (bs.size < HeaderSize)
-            throw RuntimeException("invalid response")
-        val str = String(bs, HeaderSize, bs.size - HeaderSize, item.charset)
+    private fun processResponse(item: Item, bs: ByteArray): ItemValue {
+        val str = parseResponse(bs, item.charset)
         if (str == ZbxError)
             throw RuntimeException(str)
         val iv = ItemValue("", item.key, str)

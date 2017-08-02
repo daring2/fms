@@ -1,11 +1,10 @@
 package com.gitlab.daring.fms.zabbix.sender
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.gitlab.daring.fms.common.json.JsonUtils.JsonMapper
 import com.gitlab.daring.fms.common.network.SocketProvider
 import com.gitlab.daring.fms.common.network.SocketProviderImpl
 import com.gitlab.daring.fms.zabbix.model.ItemValue
-import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.HeaderSize
+import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.parseJsonResponse
 import com.typesafe.config.Config
 
 class ZabbixSender(
@@ -23,20 +22,13 @@ class ZabbixSender(
             val rn = req.buildJson()
             JsonMapper.writeValue(socket.getOutputStream(), rn)
             val rbs = socket.getInputStream().readBytes()
-            return parseResponse(rbs)
+            return parseJsonResponse<SendResult>(rbs)
         }
     }
 
     fun send(vararg vs: ItemValue): SendResult {
         val req = SendRequest(listOf(*vs))
         return send(req)
-    }
-
-    private fun parseResponse(bs: ByteArray): SendResult {
-        if (bs.size < HeaderSize)
-            throw RuntimeException("invalid response")
-        val str = String(bs, HeaderSize, bs.size - HeaderSize, Charsets.UTF_8)
-        return JsonMapper.readValue(str)
     }
 
 }

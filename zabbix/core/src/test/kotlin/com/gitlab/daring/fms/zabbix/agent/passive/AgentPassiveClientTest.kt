@@ -1,4 +1,4 @@
-package com.gitlab.daring.fms.zabbix.agent
+package com.gitlab.daring.fms.zabbix.agent.passive
 
 import com.gitlab.daring.fms.common.config.ConfigUtils
 import com.gitlab.daring.fms.common.network.SocketProviderImpl
