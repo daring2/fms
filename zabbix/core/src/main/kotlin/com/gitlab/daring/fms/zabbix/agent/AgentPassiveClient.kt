@@ -9,7 +9,7 @@ import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.ZbxError
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.ZbxNotSupported
 import com.typesafe.config.Config
 
-class ZabbixAgentClient(
+class AgentPassiveClient(
         val host: String,
         val port: Int = 10050,
         val socketProvider: SocketProvider = SocketProviderImpl(3000, 10000)

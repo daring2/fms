@@ -14,12 +14,12 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.mockito.Mockito.verify
 
-class ZabbixAgentClientTest {
+class AgentPassiveClientTest {
 
     @Test
     fun testInit() {
         val c = ConfigUtils.configFromString("{host=h1, port=10, connectTimeout=1s, readTimeout=2s}")
-        val sender = ZabbixAgentClient(c)
+        val sender = AgentPassiveClient(c)
         assertEquals("h1", sender.host)
         assertEquals(10, sender.port)
         val sp = sender.socketProvider as SocketProviderImpl
@@ -35,9 +35,9 @@ class ZabbixAgentClientTest {
         }
     }
 
-    fun testRequest(item: String, result: String, f: (ZabbixAgentClient) -> Unit) {
+    fun testRequest(item: String, result: String, f: (AgentPassiveClient) -> Unit) {
         val sp = MockSocketProvider()
-        val cl = ZabbixAgentClient("h1", 10, sp)
+        val cl = AgentPassiveClient("h1", 10, sp)
         mockInputStream(sp, result)
         f(cl)
         verify(sp.provider).createSocket("h1", 10)
