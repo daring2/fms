@@ -2,6 +2,7 @@ package com.gitlab.daring.fms.zabbix.sender
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.gitlab.daring.fms.common.json.JsonUtils.JsonMapper
+import com.gitlab.daring.fms.common.json.toMap
 import com.gitlab.daring.fms.zabbix.model.ItemValue
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -31,6 +32,22 @@ class SendRequestTest {
     fun assertJsonEquals(exp: String, n: JsonNode) {
         val expNode = JsonMapper.readTree(exp)
         assertEquals("" + expNode, "" + n)
+    }
+
+    @Test
+    fun testBuildValueJson() {
+        val req = SendRequest(emptyList())
+        val v1 = ItemValue("h1", "k1", "v1")
+        val m1 = hashMapOf("host" to "h1", "key" to "k1", "value" to "v1")
+        assertEquals(m1, req.buildValueJson(v1, 4).toMap())
+
+        val v2 = v1.copy(isError = true)
+        val m2 = m1 + ("state" to 1)
+        assertEquals(m2, req.buildValueJson(v2, 4).toMap())
+
+        val v3 = v1.copy(time = Duration.ofMillis(2003))
+        val m3 = m1 + listOf("clock" to 2L, "ns" to 3000004)
+        assertEquals(m3, req.buildValueJson(v3, 4).toMap())
     }
 
 }

@@ -7,8 +7,8 @@ import java.time.Duration
 
 internal object ZabbixSenderUtils {
 
-    val ValueCharMatcher = CharMatcher.javaIsoControl().and(CharMatcher.whitespace().negate())
-
+    private val ValueCharMatcher = CharMatcher.javaIsoControl()
+            .and(CharMatcher.whitespace().negate())
 
     /**
      * Removes unsupported chars from value string

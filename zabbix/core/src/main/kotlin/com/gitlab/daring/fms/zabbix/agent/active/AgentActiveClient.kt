@@ -22,7 +22,7 @@ class AgentActiveClient(
     private val hostItems = ConcurrentHashMap<String, List<Item>>()
 
     @Volatile
-    var listener:  (List<AgentItemValue>) -> Unit = {}
+    var valueListener:  (List<AgentItemValue>) -> Unit = {}
 
     val isStarted get() = started.get()
 
@@ -73,7 +73,7 @@ class AgentActiveClient(
     }
 
     private fun processDataRequest(req: AgentRequest): AgentResponse {
-        req.data?.let { listener(it) }
+        req.data?.let { valueListener(it) }
         return AgentResponse("success", "")
     }
 
