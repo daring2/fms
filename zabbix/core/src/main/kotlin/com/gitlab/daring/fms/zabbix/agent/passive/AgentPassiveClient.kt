@@ -34,7 +34,7 @@ class AgentPassiveClient(
     }
 
     private fun processResponse(item: Item, bs: ByteArray): ItemValue {
-        val str = parseResponse(bs, item.charset)
+        val str = parseResponse(bs, charset(item.charset))
         if (str == ZbxError)
             throw RuntimeException(str)
         val iv = ItemValue("", item.key, str)
