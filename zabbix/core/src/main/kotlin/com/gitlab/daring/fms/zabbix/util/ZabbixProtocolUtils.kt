@@ -2,6 +2,7 @@ package com.gitlab.daring.fms.zabbix.util
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.gitlab.daring.fms.common.json.JsonUtils.JsonMapper
+import java.io.InputStream
 import java.nio.charset.Charset
 
 object ZabbixProtocolUtils {
@@ -17,9 +18,9 @@ object ZabbixProtocolUtils {
         return String(bs, HeaderSize, bs.size - HeaderSize, charset)
     }
 
-    inline fun <reified T: Any> parseJsonResponse(bs: ByteArray): T {
-        val str = parseResponse(bs, Charsets.UTF_8)
-        return JsonMapper.readValue(str)
+    inline fun <reified T: Any> parseJsonResponse(input: InputStream): T {
+        input.skip(HeaderSize.toLong())
+        return JsonMapper.readValue<T>(input)
     }
     
 }

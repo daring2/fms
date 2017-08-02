@@ -5,6 +5,7 @@ import org.junit.Test
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.HeaderSize
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.parseJsonResponse
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.parseResponse
+import java.io.ByteArrayInputStream
 import kotlin.text.Charsets.UTF_8
 
 class ZabbixProtocolUtilsTest {
@@ -18,7 +19,8 @@ class ZabbixProtocolUtilsTest {
     @Test
     fun testParseJsonResponse() {
         val bs1 = ("0".repeat(HeaderSize) + "{v: 'v1'}").toByteArray(UTF_8)
-        assertEquals(TestBean("v1"), parseJsonResponse<TestBean>(bs1))
+        val r1 = parseJsonResponse<TestBean>(ByteArrayInputStream(bs1))
+        assertEquals(TestBean("v1"), r1)
     }
 
 }

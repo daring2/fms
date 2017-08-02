@@ -20,9 +20,8 @@ class ZabbixSender(
         val socket = socketProvider.createSocket(host, port)
         socket.use {
             val rn = req.buildJson()
-            JsonMapper.writeValue(socket.getOutputStream(), rn)
-            val rbs = socket.getInputStream().readBytes()
-            return parseJsonResponse<SendResult>(rbs)
+            JsonMapper.writeValue(it.getOutputStream(), rn)
+            return parseJsonResponse<SendResult>(it.getInputStream())
         }
     }
 
