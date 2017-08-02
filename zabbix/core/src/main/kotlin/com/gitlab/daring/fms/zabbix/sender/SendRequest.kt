@@ -1,20 +1,19 @@
 package com.gitlab.daring.fms.zabbix.sender
 
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.gitlab.daring.fms.common.json.JsonUtils
 import com.gitlab.daring.fms.common.json.JsonUtils.JsonMapper
 import com.gitlab.daring.fms.zabbix.model.ItemValue
 import com.gitlab.daring.fms.zabbix.sender.ZabbixSenderUtils.addTimeFields
 import com.gitlab.daring.fms.zabbix.sender.ZabbixSenderUtils.normalizeValue
-import java.time.Duration
+import java.time.Instant
 
 data class SendRequest(
         val data: List<ItemValue>,
-        val time: Duration? = null,
+        val time: Instant? = null,
         val proxy: String? = null
 ) {
 
-    fun buildJson(): ObjectNode {
+    internal fun buildJson(): ObjectNode {
         val n = JsonMapper.createObjectNode()
         if (proxy != null) {
             n.put("request", "history data")
@@ -31,12 +30,9 @@ data class SendRequest(
     }
 
     internal fun buildValueJson(v: ItemValue, index: Int): ObjectNode {
-        val n = JsonUtils.JsonMapper.createObjectNode()
-        n.put("host", v.host)
-        n.put("key", v.key)
+        val n = JsonMapper.valueToTree<ObjectNode>(v)
         n.put("value", normalizeValue(v.value))
-        if (v.isError) n.put("state", 1)
-        v.time?.let { addTimeFields(n, it, index) }
+        if (v.ns != null) n.put("ns", v.ns + index)
         return n
     }
 

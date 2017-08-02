@@ -40,7 +40,7 @@ class AgentPassiveClient(
         val iv = ItemValue("", item.key, str)
         if (str.startsWith(ZbxNotSupported)) {
             val error = str.substring(ZbxNotSupported.length)
-            return iv.copy(value = error, isError = true)
+            return iv.withError(error)
         }  else {
             return iv
         }

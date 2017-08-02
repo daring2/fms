@@ -3,7 +3,7 @@ package com.gitlab.daring.fms.zabbix.sender
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.google.common.base.CharMatcher
-import java.time.Duration
+import java.time.Instant
 
 internal object ZabbixSenderUtils {
 
@@ -20,8 +20,8 @@ internal object ZabbixSenderUtils {
     /**
      * Adds time fields (clock, ns) to given [JsonNode]
      */
-    fun addTimeFields(n: ObjectNode, time: Duration, nanos: Int): Unit {
-        n.put("clock", time.seconds)
+    fun addTimeFields(n: ObjectNode, time: Instant, nanos: Int): Unit {
+        n.put("clock", time.epochSecond)
         n.put("ns", time.nano + nanos)
     }
 

@@ -47,7 +47,7 @@ class AgentPassiveClientTest {
 
     @Test
     fun testNotSupportedItem() {
-        val iv1 = ItemValue("", "i1", "err1", isError = true)
+        val iv1 = ItemValue("", "i1", "err1", state = 1)
         testRequest("i1", ZbxNotSupported + "err1") { cl ->
             assertEquals(iv1, cl.request(Item("i1")))
         }

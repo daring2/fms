@@ -5,7 +5,7 @@ import com.gitlab.daring.fms.zabbix.sender.ZabbixSenderUtils.addTimeFields
 import com.gitlab.daring.fms.zabbix.sender.ZabbixSenderUtils.normalizeValue
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import java.time.Duration
+import java.time.Instant.ofEpochMilli
 
 class ZabbixSenderUtilsTest {
 
@@ -24,7 +24,7 @@ class ZabbixSenderUtilsTest {
 
     fun checkAddTimeFields(millis: Long, nanos: Int, expClock: Long, expNanos: Int) {
         val n = JsonMapper.createObjectNode()
-        addTimeFields(n, Duration.ofMillis(millis), nanos)
+        addTimeFields(n, ofEpochMilli(millis), nanos)
         assertEquals(2, n.size())
         assertEquals(expClock, n.get("clock").longValue())
         assertEquals(expNanos, n.get("ns").intValue())
