@@ -2,6 +2,7 @@ package com.gitlab.daring.fms.zabbix.agent.active
 
 import com.gitlab.daring.fms.common.json.JsonUtils.JsonMapper
 import com.gitlab.daring.fms.zabbix.model.Item
+import com.gitlab.daring.fms.zabbix.model.ItemValue
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.parseJsonResponse
 import org.slf4j.LoggerFactory.getLogger
 import java.net.ServerSocket
@@ -22,7 +23,7 @@ class AgentActiveClient(
     private val hostItems = ConcurrentHashMap<String, List<Item>>()
 
     @Volatile
-    var valueListener:  (List<AgentItemValue>) -> Unit = {}
+    var valueListener:  (List<ItemValue>) -> Unit = {}
 
     val isStarted get() = started.get()
 
