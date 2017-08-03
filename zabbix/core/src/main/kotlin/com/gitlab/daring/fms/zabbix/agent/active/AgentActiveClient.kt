@@ -1,9 +1,11 @@
 package com.gitlab.daring.fms.zabbix.agent.active
 
+import com.gitlab.daring.fms.common.concurrent.ConcurrentUtils.newExecutor
 import com.gitlab.daring.fms.common.json.JsonUtils.JsonMapper
 import com.gitlab.daring.fms.zabbix.model.Item
 import com.gitlab.daring.fms.zabbix.model.ItemValue
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.parseJsonResponse
+import com.typesafe.config.Config
 import org.slf4j.LoggerFactory.getLogger
 import java.net.ServerSocket
 import java.net.Socket
@@ -32,6 +34,12 @@ class AgentActiveClient(
     var valueListener:  (List<ItemValue>) -> Unit = {}
 
     val isStarted get() = started.get()
+
+    constructor(c: Config) : this(
+            c.getInt("port"),
+            c.getInt("readTimeout"),
+            newExecutor(c.getConfig("executor"))
+    )
 
     fun start() {
         if (started.compareAndSet(false, true))
