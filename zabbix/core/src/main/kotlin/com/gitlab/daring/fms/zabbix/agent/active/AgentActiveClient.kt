@@ -19,8 +19,11 @@ class AgentActiveClient(
 ) : AutoCloseable {
 
     private val logger = getLogger(javaClass)
+
     private val started = AtomicBoolean()
     private val hostItems = ConcurrentHashMap<String, List<Item>>()
+    @Volatile
+    private var serverSocket: ServerSocket? = null
 
     @Volatile
     var valueListener:  (List<ItemValue>) -> Unit = {}
@@ -33,7 +36,8 @@ class AgentActiveClient(
     }
 
     fun stop() {
-        started.compareAndSet(true, false)
+        if (started.compareAndSet(true, false))
+            serverSocket?.close()
     }
 
     override fun close() = stop()
@@ -43,15 +47,16 @@ class AgentActiveClient(
     }
 
     private fun run() {
-        ServerSocket(port).use { server ->
+        ServerSocket(port).use {
+            serverSocket = it
             while (isStarted) tryRun("accept") {
-                val socket = server.accept()
+                val socket = it.accept()
                 executor.execute { processRequest(socket) }
             }
         }
     }
 
-    private fun processRequest(socket: Socket) = tryRun("process request") {
+    private fun processRequest(socket: Socket) = tryRun("process") {
         socket.use {
             it.soTimeout = readTimeout
             val req = parseJsonResponse<AgentRequest>(it.getInputStream())
