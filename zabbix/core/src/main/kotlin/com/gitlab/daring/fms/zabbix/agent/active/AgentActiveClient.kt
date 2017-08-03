@@ -25,6 +25,9 @@ class AgentActiveClient(
     @Volatile
     private var serverSocket: ServerSocket? = null
 
+    /**
+     * Listener of new item values received from Zabbix agent
+     */
     @Volatile
     var valueListener:  (List<ItemValue>) -> Unit = {}
 
@@ -79,6 +82,7 @@ class AgentActiveClient(
     }
 
     private fun processDataRequest(req: AgentRequest): AgentResponse {
+        //TODO update lastlogsize, mtime
         req.data?.let { valueListener(it) }
         return AgentResponse("success", "")
     }
