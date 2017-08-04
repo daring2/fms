@@ -27,6 +27,13 @@ class ConfigExtensionTest {
         assertEquals(b1, c1.getBean<TestBean>("b1"))
     }
 
+    @Test
+    fun testGetOpt() {
+        val c1 = configFromString("p1=10")
+        assertEquals(10, c1.getOpt { getInt("p1") })
+        assertEquals(null, c1.getOpt { getInt("p2") })
+    }
+
 }
 
 data class TestBean(

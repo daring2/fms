@@ -3,6 +3,7 @@ package com.gitlab.daring.fms.common.config
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.gitlab.daring.fms.common.json.JsonUtils.JsonMapper
 import com.typesafe.config.Config
+import com.typesafe.config.ConfigException
 import com.typesafe.config.ConfigUtil.splitPath
 
 fun Config.getMillis(path: String): Long {
@@ -22,4 +23,12 @@ inline fun <reified T: Any> Config.toBean(): T {
 
 inline fun <reified T: Any> Config.getBean(path: String): T {
     return getConfig(path).toBean()
+}
+
+fun <T> Config.getOpt(f: Config.() -> T): T? {
+    return try {
+        f(this)
+    } catch (e: ConfigException.Missing) {
+        return null
+    }
 }
