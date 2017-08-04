@@ -15,7 +15,7 @@ class ZabbixSenderTest {
 
     @Test
     fun testInit() {
-        val c = configFromString("{host=h1, port=10, connectTimeout=1s, readTimeout=2s}")
+        val c = configFromString("{ host=h1, port=10, connectTimeout=1s, readTimeout=2s }")
         val sender = ZabbixSender(c)
         assertEquals("h1", sender.host)
         assertEquals(10, sender.port)

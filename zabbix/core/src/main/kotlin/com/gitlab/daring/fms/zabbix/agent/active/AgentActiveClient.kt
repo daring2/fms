@@ -1,6 +1,7 @@
 package com.gitlab.daring.fms.zabbix.agent.active
 
 import com.gitlab.daring.fms.common.concurrent.ConcurrentUtils.newExecutor
+import com.gitlab.daring.fms.common.config.getMillis
 import com.gitlab.daring.fms.common.json.JsonUtils.JsonMapper
 import com.gitlab.daring.fms.zabbix.model.Item
 import com.gitlab.daring.fms.zabbix.model.ItemValue
@@ -37,7 +38,7 @@ class AgentActiveClient(
 
     constructor(c: Config) : this(
             c.getInt("port"),
-            c.getInt("readTimeout"),
+            c.getMillis("readTimeout").toInt(),
             newExecutor(c.getConfig("executor"))
     )
 
