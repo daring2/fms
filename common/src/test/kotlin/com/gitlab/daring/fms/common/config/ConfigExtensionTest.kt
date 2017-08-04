@@ -21,10 +21,10 @@ class ConfigExtensionTest {
 
     @Test
     fun testToBean() {
-        val c1 = configFromString("p1 { p1=v1,p2=2 }")
+        val c1 = configFromString("b1 { p1=v1,p2=2 }")
         val b1 = TestBean("v1", 2)
-        assertEquals(b1, c1.getConfig("p1").toBean<TestBean>())
-        assertEquals(b1, c1.getBean<TestBean>("p1"))
+        assertEquals(b1, c1.getConfig("b1").toBean<TestBean>())
+        assertEquals(b1, c1.getBean<TestBean>("b1"))
     }
 
 }
