@@ -3,6 +3,7 @@ package com.gitlab.daring.fms.zabbix.agent.active
 import com.gitlab.daring.fms.common.concurrent.ConcurrentUtils.newExecutor
 import com.gitlab.daring.fms.common.config.getMillis
 import com.gitlab.daring.fms.common.json.JsonUtils.JsonMapper
+import com.gitlab.daring.fms.common.network.ServerSocketProvider
 import com.gitlab.daring.fms.zabbix.model.Item
 import com.gitlab.daring.fms.zabbix.model.ItemValue
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.parseJsonResponse
@@ -18,7 +19,8 @@ import java.util.concurrent.atomic.AtomicBoolean
 class AgentActiveClient(
         val port: Int = 10051,
         val readTimeout: Int = 3000,
-        val executor: ExecutorService = newCachedThreadPool()
+        val executor: ExecutorService = newCachedThreadPool(),
+        val socketProvider: ServerSocketProvider = ServerSocketProvider()
 ) : AutoCloseable {
 
     private val logger = getLogger(javaClass)
@@ -61,9 +63,10 @@ class AgentActiveClient(
     }
 
     private fun run() {
-        ServerSocket(port).use {
+        socketProvider.createServerSocket(port).use {
             serverSocket = it
-            while (isStarted) tryRun("accept") {
+            //TODO use circuit breaker
+            while (isStarted && !it.isClosed) tryRun("accept") {
                 val socket = it.accept()
                 executor.execute { processRequest(socket) }
             }

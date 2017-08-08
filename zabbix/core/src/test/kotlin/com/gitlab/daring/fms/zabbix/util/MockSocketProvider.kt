@@ -1,20 +1,28 @@
 package com.gitlab.daring.fms.zabbix.util
 
+import com.gitlab.daring.fms.common.network.ServerSocketProvider
 import com.gitlab.daring.fms.common.network.SocketProvider
-import org.mockito.ArgumentMatchers.*
 import org.mockito.Mockito.*
 import java.io.ByteArrayOutputStream
+import java.net.ServerSocket
 import java.net.Socket
 import java.nio.charset.Charset
+import java.util.concurrent.SynchronousQueue
 
-class MockSocketProvider: SocketProvider {
+class MockSocketProvider {
 
-    val provider: SocketProvider = mock(SocketProvider::class.java)
+    val provider = mock(SocketProvider::class.java)
     val socket: Socket = mock(Socket::class.java)
     val output = createOutput()
 
+    val serverProvider = mock(ServerSocketProvider::class.java)
+    val serverSocket = mock(ServerSocket::class.java)
+    val acceptQueue = SynchronousQueue<Socket>()
+
     init {
         `when`(provider.createSocket(any(), anyInt())).thenReturn(socket)
+        `when`(serverProvider.createServerSocket(anyInt())).thenReturn(serverSocket)
+        `when`(serverSocket.accept()).thenReturn(acceptQueue.take())
     }
 
     fun createOutput(): ByteArrayOutputStream {
@@ -26,10 +34,6 @@ class MockSocketProvider: SocketProvider {
     fun setInput(str: String, charset: Charset = Charsets.UTF_8) {
         val stream = str.byteInputStream(charset)
         `when`(socket.getInputStream()).thenReturn(stream)
-    }
-
-    override fun createSocket(host: String?, port: Int): Socket {
-        return provider.createSocket(host, port)
     }
 
 }

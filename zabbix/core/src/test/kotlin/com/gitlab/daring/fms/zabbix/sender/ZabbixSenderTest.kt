@@ -29,7 +29,7 @@ class ZabbixSenderTest {
         val sp = MockSocketProvider()
         val sr = SendResult("r1", "info1")
         mockInputStream(sp, sr)
-        val sender = ZabbixSender("h1", 10, sp)
+        val sender = ZabbixSender("h1", 10, sp.provider)
 
         val v1 = ItemValue("h1", "k1", "v1")
         val req1 = SendRequest(listOf(v1))

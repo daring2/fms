@@ -37,7 +37,7 @@ class AgentPassiveClientTest {
 
     fun testRequest(item: String, result: String, f: (AgentPassiveClient) -> Unit) {
         val sp = MockSocketProvider()
-        val cl = AgentPassiveClient("h1", 10, sp)
+        val cl = AgentPassiveClient("h1", 10, sp.provider)
         mockInputStream(sp, result)
         f(cl)
         verify(sp.provider).createSocket("h1", 10)
