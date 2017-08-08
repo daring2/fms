@@ -26,7 +26,7 @@ class AgentActiveClient(
     private val started = AtomicBoolean()
     private val hostItems = ConcurrentHashMap<String, List<Item>>()
     @Volatile
-    private var serverSocket: ServerSocket? = null
+    internal var serverSocket: ServerSocket? = null
 
     /**
      * Listener of new item values received from Zabbix agent
@@ -48,8 +48,10 @@ class AgentActiveClient(
     }
 
     fun stop() {
-        if (started.compareAndSet(true, false))
+        if (started.compareAndSet(true, false)) {
             serverSocket?.close()
+            serverSocket = null
+        }
     }
 
     override fun close() = stop()
@@ -100,7 +102,7 @@ class AgentActiveClient(
         try {
             f()
         } catch (e: Exception) {
-            logger.warn("$action error", e)
+            if (isStarted) logger.warn("$action error", e)
         }
     }
 

@@ -1,23 +1,41 @@
 package com.gitlab.daring.fms.zabbix.agent.active
 
 import com.gitlab.daring.fms.common.config.ConfigUtils.configFromString
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import io.kotlintest.matchers.shouldBe
+import io.kotlintest.specs.FunSpec
+import org.awaitility.Awaitility.await
 import java.util.concurrent.ThreadPoolExecutor
 
-class AgentActiveClientTest {
+class AgentActiveClientTest : FunSpec({
 
-    @Test
-    fun testInit() {
+    test("init") {
         val c = configFromString("{ port=1, readTimeout=2s, executor { size=3, maxSize=4 } }")
         val cl = AgentActiveClient(c)
-        assertEquals(1, cl.port)
-        assertEquals(2000, cl.readTimeout)
+        cl.port shouldBe 1
+        cl.readTimeout shouldBe 2000
         val exec = cl.executor as ThreadPoolExecutor
-        assertEquals(3, exec.corePoolSize)
-        assertEquals(4, exec.maximumPoolSize)
+        exec.corePoolSize shouldBe 3
+        exec.maximumPoolSize shouldBe 4
     }
 
+    test("start/stop") {
+        val cl = AgentActiveClient()
+        cl.isStarted shouldBe false
+        cl.serverSocket shouldBe null
+
+        cl.start()
+        cl.isStarted shouldBe true
+        await().until { cl.serverSocket != null }
+        val serverSocket = cl.serverSocket
+        serverSocket?.isClosed shouldBe false
+
+        cl.stop()
+        cl.isStarted shouldBe false
+        await().until { cl.serverSocket == null }
+        serverSocket?.isClosed shouldBe true
+    }
+
+
     //TODO implement
-    
-}
+
+})
