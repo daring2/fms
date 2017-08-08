@@ -3,6 +3,7 @@ package com.gitlab.daring.fms.zabbix.util
 import com.gitlab.daring.fms.common.json.JsonUtils.JsonMapper
 import com.gitlab.daring.fms.common.network.ServerSocketProvider
 import com.gitlab.daring.fms.common.network.SocketProvider
+import org.awaitility.Awaitility.await
 import org.junit.Assert.assertArrayEquals
 import org.mockito.Mockito.*
 import java.io.ByteArrayOutputStream
@@ -23,8 +24,14 @@ class MockSocketProvider : AutoCloseable {
 
     init {
         `when`(provider.createSocket(any(), anyInt())).thenReturn(socket)
+        `when`(socket.close()).then {
+            `when`(socket.isClosed).thenReturn(true)
+        }
         `when`(serverProvider.createServerSocket(anyInt())).thenReturn(serverSocket)
         `when`(serverSocket.accept()).thenAnswer { acceptQueue.take() }
+        `when`(serverSocket.close()).then {
+            `when`(serverSocket.isClosed).thenReturn(true)
+        }
     }
 
     fun createOutput(): ByteArrayOutputStream {
@@ -40,6 +47,7 @@ class MockSocketProvider : AutoCloseable {
 
     fun accept() {
         acceptQueue.put(socket)
+        await().until { socket.isClosed }
     }
 
     fun assertOutput(exp: String) {
@@ -51,7 +59,7 @@ class MockSocketProvider : AutoCloseable {
     }
 
     override fun close() {
-        acceptQueue.put(null)
+        acceptQueue.put(mock(Socket::class.java))
     }
 
 }
