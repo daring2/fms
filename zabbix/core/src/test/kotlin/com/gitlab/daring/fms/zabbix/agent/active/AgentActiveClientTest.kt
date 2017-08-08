@@ -27,7 +27,7 @@ class AgentActiveClientTest : FunSpec({
     }
 
     test("start/stop") {
-        val cl = AgentActiveClient()
+        val cl = AgentActiveClient(10)
         cl.isStarted shouldBe false
         cl.serverSocket shouldBe null
 
@@ -35,6 +35,7 @@ class AgentActiveClientTest : FunSpec({
         cl.isStarted shouldBe true
         await().until { cl.serverSocket != null }
         val serverSocket = cl.serverSocket
+        serverSocket?.localPort shouldBe 10
         serverSocket?.isClosed shouldBe false
 
         cl.stop()
@@ -45,12 +46,13 @@ class AgentActiveClientTest : FunSpec({
 
     fun checkProcess(req: AgentRequest, res: AgentResponse, f: (AgentActiveClient) -> Unit = {}) {
         MockSocketProvider().use { sp ->
-            AgentActiveClient(socketProvider = sp.serverProvider).use { cl ->
+            AgentActiveClient(10, 100, socketProvider = sp.serverProvider).use { cl ->
                 f(cl)
                 cl.start()
                 sp.setJsonInput(TestHeader, req)
                 sp.accept()
                 sp.assertJsonOutput(res)
+                verify(sp.socket).soTimeout = 100
                 verify(sp.socket).close()
             }
         }
