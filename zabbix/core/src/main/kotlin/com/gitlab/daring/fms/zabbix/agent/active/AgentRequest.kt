@@ -6,6 +6,6 @@ import com.gitlab.daring.fms.zabbix.model.ItemValue
 @JsonIgnoreProperties(ignoreUnknown = true)
 internal data class AgentRequest(
         val request: String,
-        val host: String?,
-        val data: List<ItemValue>?
+        val host: String? = null,
+        val data: List<ItemValue>? = null
 )

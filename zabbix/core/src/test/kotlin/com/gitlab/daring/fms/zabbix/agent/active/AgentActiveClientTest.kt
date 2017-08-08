@@ -1,6 +1,7 @@
 package com.gitlab.daring.fms.zabbix.agent.active
 
 import com.gitlab.daring.fms.common.config.ConfigUtils.configFromString
+import com.gitlab.daring.fms.zabbix.model.Item
 import com.gitlab.daring.fms.zabbix.util.MockSocketProvider
 import com.gitlab.daring.fms.zabbix.util.ZabbixTestUtils.TestHeader
 import io.kotlintest.matchers.shouldBe
@@ -38,18 +39,41 @@ class AgentActiveClientTest : FunSpec({
         serverSocket?.isClosed shouldBe true
     }
 
-    test("active checks - invalid request") {
-        val sp = MockSocketProvider()
-        val cl = AgentActiveClient(socketProvider = sp.serverProvider)
-        cl.start()
-        sp.setInput("$TestHeader{request:'none'}")
-        sp.accept()
-        sp.assertJsonOutput(AgentResponse("failed", "invalid request"))
-        verify(sp.socket).close()
-        sp.close()
+    fun checkProcess(req: AgentRequest, res: AgentResponse, f: (AgentActiveClient) -> Unit = {}) {
+        MockSocketProvider().use { sp ->
+            AgentActiveClient(socketProvider = sp.serverProvider).use { cl ->
+                f(cl)
+                cl.start()
+                sp.setJsonInput(TestHeader, req)
+                sp.accept()
+                sp.assertJsonOutput(res)
+                verify(sp.socket).close()
+            }
+        }
     }
 
-    // sp.setInput("{request:'active checks',host:'h1'}")
+    test("invalid request") {
+        checkProcess(
+                AgentRequest("none"),
+                AgentResponse("failed", "invalid request")
+        )
+    }
+
+    test("active checks") {
+        checkProcess(
+                AgentRequest("active checks", "h1"),
+                AgentResponse("failed", "host h1 not found")
+        )
+        val items1 = listOf(Item("i11"), Item("i12"))
+        val items2 = listOf(Item("i21"), Item("i22"))
+        checkProcess(
+                AgentRequest("active checks", "h1"),
+                AgentResponse("success", data = items1)
+        ) { cl ->
+            cl.setItems("h1", items1)
+            cl.setItems("h2", items2)
+        }
+    }
 
     //TODO implement
 

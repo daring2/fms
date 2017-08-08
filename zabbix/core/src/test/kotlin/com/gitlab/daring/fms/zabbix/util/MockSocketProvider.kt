@@ -45,6 +45,10 @@ class MockSocketProvider : AutoCloseable {
         `when`(socket.getInputStream()).thenReturn(stream)
     }
 
+    fun setJsonInput(header: String, obj: Any) {
+        setInput(header + JsonMapper.writeValueAsString(obj))
+    }
+
     fun accept() {
         acceptQueue.put(socket)
         await().until { socket.isClosed }
