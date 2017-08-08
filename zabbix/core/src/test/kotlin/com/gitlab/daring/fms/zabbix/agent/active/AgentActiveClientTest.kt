@@ -52,6 +52,7 @@ class AgentActiveClientTest : FunSpec({
                 sp.setJsonInput(TestHeader, req)
                 sp.accept()
                 sp.assertJsonOutput(res)
+                verify(sp.serverProvider).createServerSocket(10)
                 verify(sp.socket).soTimeout = 100
                 verify(sp.socket).close()
             }
