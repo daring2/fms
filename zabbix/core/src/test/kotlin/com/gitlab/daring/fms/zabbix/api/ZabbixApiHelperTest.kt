@@ -1,7 +1,7 @@
 package com.gitlab.daring.fms.zabbix.api
 
 import com.gitlab.daring.fms.common.config.ConfigUtils.configFromString
-import com.gitlab.daring.fms.zabbix.util.ZabbixTestUtils.assertError
+import com.gitlab.daring.fms.test.CommonTestUtils.assertError
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.time.Duration

@@ -2,13 +2,13 @@ package com.gitlab.daring.fms.zabbix.agent.passive
 
 import com.gitlab.daring.fms.common.config.ConfigUtils
 import com.gitlab.daring.fms.common.network.SocketProviderImpl
+import com.gitlab.daring.fms.test.CommonTestUtils.assertError
 import com.gitlab.daring.fms.zabbix.model.Item
 import com.gitlab.daring.fms.zabbix.model.ItemValue
 import com.gitlab.daring.fms.zabbix.util.MockSocketProvider
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.HeaderSize
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.ZbxError
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.ZbxNotSupported
-import com.gitlab.daring.fms.zabbix.util.ZabbixTestUtils.assertError
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.mockito.Mockito.verify

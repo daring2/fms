@@ -1,16 +1,9 @@
 package com.gitlab.daring.fms.zabbix.util
 
-import org.junit.Assert
-import org.junit.Assert.assertEquals
+import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.HeaderSize
 
 object ZabbixTestUtils {
 
-    fun assertError(error: String, func: () -> Unit) {
-        try {
-            func(); Assert.fail()
-        } catch (e: Exception) {
-            assertEquals(error, e.message)
-        }
-    }
+    val TestHeader = "0".repeat(HeaderSize)
     
 }
