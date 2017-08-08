@@ -35,7 +35,9 @@ subprojects {
         compile "ch.qos.logback:logback-classic:1.2.3"
         testCompile "junit:junit:4.12"
         testCompile "org.mockito:mockito-core:2.7.12"
-        testCompile "io.kotlintest:kotlintest:2.0.5"
+        testCompile("io.kotlintest:kotlintest:2.0.5") {
+            exclude module: "guava"
+        }
     }
 
     task copyDeps(type: Sync, dependsOn: build) {
