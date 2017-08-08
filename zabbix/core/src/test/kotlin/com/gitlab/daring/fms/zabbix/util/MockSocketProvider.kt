@@ -12,6 +12,7 @@ import java.net.Socket
 import java.nio.charset.Charset
 import java.util.concurrent.LinkedBlockingQueue
 
+@Suppress("HasPlatformType")
 class MockSocketProvider : AutoCloseable {
 
     val provider = mock(SocketProvider::class.java)
