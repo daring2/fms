@@ -5,6 +5,10 @@ import com.gitlab.daring.fms.zabbix.model.Item
 import com.gitlab.daring.fms.zabbix.util.MockSocketProvider
 import com.gitlab.daring.fms.zabbix.util.ZabbixTestUtils.TestHeader
 import io.kotlintest.matchers.shouldBe
+import io.kotlintest.properties.forAll
+import io.kotlintest.properties.headers
+import io.kotlintest.properties.row
+import io.kotlintest.properties.table
 import io.kotlintest.specs.FunSpec
 import org.awaitility.Awaitility.await
 import org.mockito.Mockito.verify
@@ -53,25 +57,23 @@ class AgentActiveClientTest : FunSpec({
     }
 
     test("invalid request") {
-        checkProcess(
-                AgentRequest("none"),
-                AgentResponse("failed", "invalid request")
-        )
+        checkProcess(AgentRequest("none"), AgentResponse("failed", "invalid request"))
     }
 
     test("active checks") {
-        checkProcess(
-                AgentRequest("active checks", "h1"),
-                AgentResponse("failed", "host h1 not found")
-        )
         val items1 = listOf(Item("i11"), Item("i12"))
         val items2 = listOf(Item("i21"), Item("i22"))
-        checkProcess(
-                AgentRequest("active checks", "h1"),
-                AgentResponse("success", data = items1)
-        ) { cl ->
-            cl.setItems("h1", items1)
-            cl.setItems("h2", items2)
+        val table = table(
+                headers("host", "response"),
+                row("h0", AgentResponse("failed", "host h0 not found")),
+                row("h1", AgentResponse("success", data = items1)),
+                row("h2", AgentResponse("success", data = items2))
+        )
+        forAll(table) { h, r ->
+            checkProcess(AgentRequest("active checks", h), r) { cl ->
+                cl.setItems("h1", items1)
+                cl.setItems("h2", items2)
+            }
         }
     }
 
