@@ -9,7 +9,6 @@ import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.HeaderSize
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.ZbxError
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.ZbxNotSupported
 import com.gitlab.daring.fms.zabbix.util.ZabbixTestUtils.assertError
-import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.mockito.Mockito.verify
@@ -41,7 +40,7 @@ class AgentPassiveClientTest {
         mockInputStream(sp, result)
         f(cl)
         verify(sp.provider).createSocket("h1", 10)
-        assertArrayEquals("$item\n".toByteArray(), sp.output.toByteArray())
+        sp.assertOutput("$item\n")
         verify(sp.socket).close()
     }
 

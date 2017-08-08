@@ -6,7 +6,6 @@ import com.gitlab.daring.fms.common.network.SocketProviderImpl
 import com.gitlab.daring.fms.zabbix.model.ItemValue
 import com.gitlab.daring.fms.zabbix.util.MockSocketProvider
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.HeaderSize
-import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.mockito.Mockito.verify
@@ -35,8 +34,7 @@ class ZabbixSenderTest {
         val req1 = SendRequest(listOf(v1))
         assertEquals(sr, sender.send(req1))
         verify(sp.provider).createSocket("h1", 10)
-        val expOut = JsonMapper.writeValueAsBytes(req1.buildJson())
-        assertArrayEquals(expOut, sp.output.toByteArray())
+        sp.assertJsonOutput(req1.buildJson())
         verify(sp.socket).close()
     }
 
