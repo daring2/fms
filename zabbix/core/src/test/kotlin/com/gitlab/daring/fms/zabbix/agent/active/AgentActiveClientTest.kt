@@ -7,6 +7,7 @@ import com.gitlab.daring.fms.zabbix.model.ItemValue
 import com.gitlab.daring.fms.zabbix.util.MockSocketProvider
 import com.gitlab.daring.fms.zabbix.util.ZabbixTestUtils.TestHeader
 import io.kotlintest.matchers.shouldBe
+import io.kotlintest.mock.`when`
 import io.kotlintest.properties.forAll
 import io.kotlintest.properties.headers
 import io.kotlintest.properties.row
@@ -15,6 +16,7 @@ import io.kotlintest.specs.FunSpec
 import org.awaitility.Awaitility.await
 import org.mockito.Mockito.verify
 import java.util.concurrent.ThreadPoolExecutor
+import java.util.concurrent.TimeUnit
 
 class AgentActiveClientTest : FunSpec() {
 
@@ -86,7 +88,14 @@ class AgentActiveClientTest : FunSpec() {
         }
 
         testWithContext("circuitBreaker") {
-            //TODO implement
+            val cb = cl.circuitBreaker
+                    .withFailureThreshold(1)
+                    .withDelay(100, TimeUnit.MILLISECONDS)
+            sp.acceptQueue.put(sp.socket)
+            `when`(sp.serverSocket.accept()).thenThrow(RuntimeException())
+            cb.isOpen shouldBe false
+            cl.start()
+            await().until { cb.isOpen }
         }
     }
 
