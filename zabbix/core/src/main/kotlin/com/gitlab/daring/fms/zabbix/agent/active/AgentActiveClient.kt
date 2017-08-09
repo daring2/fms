@@ -10,7 +10,6 @@ import com.gitlab.daring.fms.zabbix.model.ItemValue
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.parseJsonResponse
 import com.typesafe.config.Config
 import net.jodah.failsafe.CircuitBreaker
-import net.jodah.failsafe.CircuitBreakerOpenException
 import net.jodah.failsafe.Failsafe
 import org.slf4j.LoggerFactory.getLogger
 import java.net.ServerSocket
@@ -78,6 +77,8 @@ class AgentActiveClient(
         socketProvider.createServerSocket(port).use {
             serverSocket = it
             while (isStarted && !it.isClosed) tryRun("accept") {
+                if (circuitBreaker.isOpen)
+                    Thread.sleep(circuitBreaker.delay.toMillis())
                 val socket = it.accept()
                 executor.execute { processRequest(socket) }
             }
@@ -121,8 +122,6 @@ class AgentActiveClient(
     private fun tryRun(action: String, f: () -> Unit) {
         try {
             failsafe.run(f)
-        } catch (e: CircuitBreakerOpenException) {
-            Thread.sleep(circuitBreaker.delay.toMillis())
         } catch (e: Exception) {
             if (isStarted) logger.warn("$action error", e)
         }
