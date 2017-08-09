@@ -1,15 +1,14 @@
 package com.gitlab.daring.fms.test
 
-import org.junit.Assert
+import io.kotlintest.matchers.shouldBe
+import io.kotlintest.matchers.shouldThrowAny
 
 object CommonTestUtils {
 
-    fun assertError(error: String, func: () -> Unit) {
-        try {
-            func(); Assert.fail()
-        } catch (e: Exception) {
-            Assert.assertEquals(error, e.message)
-        }
+    fun assertError(error: String, func: () -> Unit): Throwable {
+        val e = shouldThrowAny(func)
+        e.message shouldBe error
+        return e
     }
 
 }
