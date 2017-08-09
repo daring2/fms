@@ -16,18 +16,14 @@ import java.util.concurrent.LinkedBlockingQueue
 class MockSocketProvider : AutoCloseable {
 
     val provider = mock(SocketProvider::class.java)
-    val socket: Socket = mock(Socket::class.java)
-    val output = createOutput()
+    var socket = newSocket()
 
     val serverProvider = mock(ServerSocketProvider::class.java)
     val serverSocket = mock(ServerSocket::class.java)
     val acceptQueue = LinkedBlockingQueue<Socket>()
 
     init {
-        `when`(provider.createSocket(any(), anyInt())).thenReturn(socket)
-        `when`(socket.close()).then {
-            `when`(socket.isClosed).thenReturn(true)
-        }
+        `when`(provider.createSocket(any(), anyInt())).thenAnswer { socket }
         `when`(serverProvider.createServerSocket(anyInt())).thenReturn(serverSocket)
         `when`(serverSocket.accept()).thenAnswer { acceptQueue.take() }
         `when`(serverSocket.close()).then {
@@ -35,10 +31,17 @@ class MockSocketProvider : AutoCloseable {
         }
     }
 
-    fun createOutput(): ByteArrayOutputStream {
-        val stream = ByteArrayOutputStream()
-        `when`(socket.getOutputStream()).thenReturn(stream)
-        return stream
+    fun newSocket(): Socket {
+        socket = mock(Socket::class.java)
+        `when`(socket.getOutputStream()).thenReturn(ByteArrayOutputStream())
+        `when`(socket.close()).then {
+            `when`(socket.isClosed).thenReturn(true)
+        }
+        return socket
+    }
+
+    fun output(): ByteArrayOutputStream {
+       return socket.getOutputStream() as ByteArrayOutputStream
     }
 
     fun setInput(str: String, charset: Charset = Charsets.UTF_8) {
@@ -56,7 +59,7 @@ class MockSocketProvider : AutoCloseable {
     }
 
     fun assertOutput(exp: String) {
-        assertArrayEquals(exp.toByteArray(), output.toByteArray())
+        assertArrayEquals(exp.toByteArray(), output().toByteArray())
     }
 
     fun assertJsonOutput(exp: Any) {
@@ -64,7 +67,7 @@ class MockSocketProvider : AutoCloseable {
     }
 
     override fun close() {
-        acceptQueue.put(mock(Socket::class.java))
+        acceptQueue.put(newSocket())
     }
 
 }
