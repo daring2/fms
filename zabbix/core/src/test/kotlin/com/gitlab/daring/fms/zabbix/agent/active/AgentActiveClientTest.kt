@@ -1,6 +1,7 @@
 package com.gitlab.daring.fms.zabbix.agent.active
 
 import com.gitlab.daring.fms.common.config.ConfigUtils.configFromString
+import com.gitlab.daring.fms.common.util.closeQuietly
 import com.gitlab.daring.fms.zabbix.model.Item
 import com.gitlab.daring.fms.zabbix.model.ItemValue
 import com.gitlab.daring.fms.zabbix.util.MockSocketProvider
@@ -106,8 +107,8 @@ class AgentActiveClientTest : FunSpec() {
         }
 
         override fun close() {
-            cl.close()
-            sp.close()
+            cl.closeQuietly()
+            sp.closeQuietly()
         }
     }
 
