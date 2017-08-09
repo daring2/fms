@@ -26,7 +26,7 @@ class AgentActiveClient(
     private val logger = getLogger(javaClass)
 
     private val started = AtomicBoolean()
-    private val hostItems = ConcurrentHashMap<String, List<Item>>()
+    private val hostItems = ConcurrentHashMap<String, Map<String, Item>>()
     @Volatile
     internal var serverSocket: ServerSocket? = null
 
@@ -59,7 +59,8 @@ class AgentActiveClient(
     override fun close() = stop()
 
     fun setItems(host: String, items: Collection<Item>) {
-        hostItems.put(host, ArrayList(items))
+        val m = items.map { it.key to it }.toMap()
+        hostItems.put(host, m)
     }
 
     private fun run() {
@@ -87,18 +88,26 @@ class AgentActiveClient(
     }
 
     private fun buildCheckResponse(req: AgentRequest): AgentResponse {
-        val items = hostItems.get(req.host)
+        val items = hostItems[req.host]
         if (items != null) {
-            return AgentResponse("success", data = items)
+            return AgentResponse("success", data = items.values)
         } else {
             return AgentResponse("failed", "host ${req.host} not found")
         }
     }
 
     private fun processDataRequest(req: AgentRequest): AgentResponse {
-        //TODO update lastlogsize, mtime
-        req.data?.let { valueListener(it) }
+        req.data?.let {vs ->
+            valueListener(vs)
+            vs.forEach(this::updateItem)
+        }
         return AgentResponse("success", "")
+    }
+
+    private fun updateItem(v: ItemValue) {
+        hostItems[v.host]?.get(v.key)?.let {
+            it.applyValue(v)
+        }
     }
 
     private fun tryRun(action: String, f: () -> Unit) {

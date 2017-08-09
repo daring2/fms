@@ -68,11 +68,13 @@ class AgentActiveClientTest : FunSpec() {
             values shouldBe emptyList<ItemValue>()
             cl.start()
             val req1 = AgentRequest("agent data", data = listOf(
-                    ItemValue("h1", "i11", "v1"),
+                    ItemValue("h1", "i11", "v1", lastlogsize = 1, mtime = 2),
                     ItemValue("h1", "i12", "v2")
             ))
             checkProcess(req1, AgentResponse("success", ""))
             values shouldBe req1.data
+            items1[0] shouldBe Item("i11", lastlogsize = 1, mtime = 2)
+            items1[1] shouldBe Item("i12")
         }
     }
 

@@ -7,5 +7,5 @@ import com.gitlab.daring.fms.zabbix.model.Item
 internal data class AgentResponse(
         val response: String,
         val info: String? = null,
-        val data: List<Item>? = null
+        val data: Collection<Item>? = null
 )
