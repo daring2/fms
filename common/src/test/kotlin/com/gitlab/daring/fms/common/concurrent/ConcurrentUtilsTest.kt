@@ -2,14 +2,13 @@ package com.gitlab.daring.fms.common.concurrent
 
 import com.gitlab.daring.fms.common.concurrent.ConcurrentUtils.newExecutor
 import com.gitlab.daring.fms.common.config.ConfigUtils.configFromString
+import io.kotlintest.specs.FunSpec
 import org.junit.Assert.assertEquals
-import org.junit.Test
 import java.util.concurrent.TimeUnit.MILLISECONDS
 
-class ConcurrentUtilsTest {
+class ConcurrentUtilsTest : FunSpec({
 
-    @Test
-    fun testNewExecutor() {
+    test("newExecutor") {
         val e1 = newExecutor(configFromString("{ size = 5 }"))
         assertEquals(5, e1.corePoolSize)
         assertEquals(5, e1.maximumPoolSize)
@@ -20,4 +19,4 @@ class ConcurrentUtilsTest {
         assertEquals(3000, e2.getKeepAliveTime(MILLISECONDS))
     }
 
-}
+})
