@@ -105,9 +105,7 @@ class AgentActiveClient(
     }
 
     private fun updateItem(v: ItemValue) {
-        hostItems[v.host]?.get(v.key)?.let {
-            it.applyValue(v)
-        }
+        hostItems[v.host]?.get(v.key)?.applyValue(v)
     }
 
     private fun tryRun(action: String, f: () -> Unit) {
