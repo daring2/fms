@@ -8,6 +8,12 @@ import java.util.concurrent.TimeUnit.MILLISECONDS
 
 object FailsafeUtils {
 
+    fun newCircuitBreaker(threshold: Int, delay: Long): CircuitBreaker {
+        return CircuitBreaker()
+                .withFailureThreshold(threshold)
+                .withDelay(delay, MILLISECONDS)
+    }
+
     fun newCircuitBreaker(c: Config): CircuitBreaker {
         return CircuitBreaker()
                 .withFailureThreshold(c.getInt("threshold"))

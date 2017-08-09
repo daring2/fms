@@ -21,13 +21,20 @@ class AgentActiveClientTest : FunSpec() {
     init {
 
         test("init") {
-            val c = configFromString("{ port=1, readTimeout=2s, executor { size=3, maxSize=4 }}")
+            val c = configFromString("{" +
+                    "port=1, readTimeout=2s, " +
+                    "executor { size=3, maxSize=4 }, " +
+                    "сircuitBreaker { threshold = 10, delay=5s } " +
+                    "}")
             val cl = AgentActiveClient(c)
             cl.port shouldBe 1
             cl.readTimeout shouldBe 2000
             val exec = cl.executor as ThreadPoolExecutor
             exec.corePoolSize shouldBe 3
             exec.maximumPoolSize shouldBe 4
+            val cb = cl.circuitBreaker
+            cb.failureThreshold.numerator shouldBe 10
+            cb.delay.toMillis() shouldBe 5000L
         }
 
         testWithContext("start/stop") {

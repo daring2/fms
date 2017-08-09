@@ -2,12 +2,15 @@ package com.gitlab.daring.fms.zabbix.agent.active
 
 import com.gitlab.daring.fms.common.concurrent.ConcurrentUtils.newExecutor
 import com.gitlab.daring.fms.common.config.getMillis
+import com.gitlab.daring.fms.common.failsafe.FailsafeUtils.newCircuitBreaker
 import com.gitlab.daring.fms.common.json.JsonUtils.JsonMapper
 import com.gitlab.daring.fms.common.network.ServerSocketProvider
 import com.gitlab.daring.fms.zabbix.model.Item
 import com.gitlab.daring.fms.zabbix.model.ItemValue
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.parseJsonResponse
 import com.typesafe.config.Config
+import net.jodah.failsafe.CircuitBreaker
+import net.jodah.failsafe.Failsafe
 import org.slf4j.LoggerFactory.getLogger
 import java.net.ServerSocket
 import java.net.Socket
@@ -20,6 +23,7 @@ class AgentActiveClient(
         val port: Int = 10051,
         val readTimeout: Int = 3000,
         val executor: ExecutorService = newCachedThreadPool(),
+        val circuitBreaker: CircuitBreaker = newCircuitBreaker(5, 1000),
         val socketProvider: ServerSocketProvider = ServerSocketProvider()
 ) : AutoCloseable {
 
@@ -29,6 +33,11 @@ class AgentActiveClient(
     private val hostItems = ConcurrentHashMap<String, Map<String, Item>>()
     @Volatile
     internal var serverSocket: ServerSocket? = null
+
+    /**
+     * [Failsafe] object used for request processing
+     */
+    val failsafe = Failsafe.with<Unit>(circuitBreaker)
 
     /**
      * Listener of new item values received from Zabbix agent
@@ -41,7 +50,8 @@ class AgentActiveClient(
     constructor(c: Config) : this(
             c.getInt("port"),
             c.getMillis("readTimeout").toInt(),
-            newExecutor(c.getConfig("executor"))
+            newExecutor(c.getConfig("executor")),
+            newCircuitBreaker(c.getConfig("сircuitBreaker"))
     )
 
     fun start() {
@@ -66,7 +76,6 @@ class AgentActiveClient(
     private fun run() {
         socketProvider.createServerSocket(port).use {
             serverSocket = it
-            //TODO use circuit breaker
             while (isStarted && !it.isClosed) tryRun("accept") {
                 val socket = it.accept()
                 executor.execute { processRequest(socket) }
@@ -110,7 +119,7 @@ class AgentActiveClient(
 
     private fun tryRun(action: String, f: () -> Unit) {
         try {
-            f()
+            failsafe.run(f)
         } catch (e: Exception) {
             if (isStarted) logger.warn("$action error", e)
         }
