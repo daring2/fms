@@ -84,6 +84,10 @@ class AgentActiveClientTest : FunSpec() {
             items1[0] shouldBe Item("i11", lastlogsize = 1, mtime = 2)
             items1[1] shouldBe Item("i12")
         }
+
+        testWithContext("circuitBreaker") {
+            //TODO implement
+        }
     }
 
     internal fun testWithContext(name: String, f: TestContext.() -> Unit) {
