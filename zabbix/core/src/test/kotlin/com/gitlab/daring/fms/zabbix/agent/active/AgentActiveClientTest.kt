@@ -2,6 +2,7 @@ package com.gitlab.daring.fms.zabbix.agent.active
 
 import com.gitlab.daring.fms.common.config.ConfigUtils.configFromString
 import com.gitlab.daring.fms.zabbix.model.Item
+import com.gitlab.daring.fms.zabbix.model.ItemValue
 import com.gitlab.daring.fms.zabbix.util.MockSocketProvider
 import com.gitlab.daring.fms.zabbix.util.ZabbixTestUtils.TestHeader
 import io.kotlintest.matchers.shouldBe
@@ -52,10 +53,6 @@ class AgentActiveClientTest : FunSpec() {
 
         testWithContext("active checks") {
             cl.start()
-            val items1 = listOf(Item("i11"), Item("i12"))
-            cl.setItems("h1", items1)
-            val items2 = listOf(Item("i21"), Item("i22"))
-            cl.setItems("h2", items2)
             val table = table(
                     headers("host", "response"),
                     row("h0", AgentResponse("failed", "host h0 not found")),
@@ -68,7 +65,14 @@ class AgentActiveClientTest : FunSpec() {
         }
 
         testWithContext("agent data") {
-            //TODO implement
+            values shouldBe emptyList<ItemValue>()
+            cl.start()
+            val req1 = AgentRequest("agent data", data = listOf(
+                    ItemValue("h1", "i11", "v1"),
+                    ItemValue("h1", "i12", "v2")
+            ))
+            checkProcess(req1, AgentResponse("success", ""))
+            values shouldBe req1.data
         }
     }
 
@@ -80,6 +84,15 @@ class AgentActiveClientTest : FunSpec() {
 
         val sp = MockSocketProvider()
         val cl = AgentActiveClient(10, 100, socketProvider = sp.serverProvider)
+        val items1 = listOf(Item("i11"), Item("i12"))
+        val items2 = listOf(Item("i21"), Item("i22"))
+        val values = ArrayList<ItemValue>()
+
+        init {
+            cl.setItems("h1", items1)
+            cl.setItems("h2", items2)
+            cl.valueListener = { vs -> values.addAll(vs) }
+        }
 
         fun checkProcess(req: AgentRequest, res: AgentResponse) {
             sp.newSocket()

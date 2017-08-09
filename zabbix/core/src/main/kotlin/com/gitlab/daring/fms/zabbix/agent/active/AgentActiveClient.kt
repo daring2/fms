@@ -58,7 +58,7 @@ class AgentActiveClient(
 
     override fun close() = stop()
 
-    fun setItems(host: String, items: List<Item>) {
+    fun setItems(host: String, items: Collection<Item>) {
         hostItems.put(host, ArrayList(items))
     }
 
