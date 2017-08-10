@@ -1,10 +1,13 @@
 package com.gitlab.daring.fms.zabbix.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonInclude
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class Item(
         val key: String,
         val delay: Int = 60,
+        val key_orig: String? = null,
         @Volatile
         var lastlogsize: Long = 0,
         @Volatile
