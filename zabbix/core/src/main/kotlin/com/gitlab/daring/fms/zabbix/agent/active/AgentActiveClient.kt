@@ -40,6 +40,9 @@ class AgentActiveClient(
      */
     val failsafe = Failsafe.with<Unit>(circuitBreaker)
 
+    @Volatile
+    var regexps: List<CheckRegexp>? = null
+
     /**
      * Listener of new item values received from Zabbix agent
      */
@@ -104,7 +107,7 @@ class AgentActiveClient(
     private fun buildCheckResponse(req: AgentRequest): AgentResponse {
         val items = hostItems[req.host]
         if (items != null) {
-            return AgentResponse("success", data = items.values)
+            return AgentResponse("success", data = items.values, regexp = regexps)
         } else {
             return AgentResponse("failed", "host ${req.host} not found")
         }
