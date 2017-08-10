@@ -40,6 +40,9 @@ class AgentActiveClient(
      */
     val failsafe = Failsafe.with<Unit>(circuitBreaker)
 
+    /**
+     * Global regular expressions
+     */
     @Volatile
     var regexps: List<CheckRegexp>? = null
 
