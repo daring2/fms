@@ -62,12 +62,14 @@ class AgentActiveClientTest : FunSpec() {
         }
 
         testWithContext("active checks") {
+            val regexps1 = listOf(CheckRegexp("rn1", "exp1"))
+            cl.regexps = regexps1
             cl.start()
             val table = table(
                     headers("host", "response"),
                     row("h0", AgentResponse("failed", "host h0 not found")),
-                    row("h1", AgentResponse("success", data = items1)),
-                    row("h2", AgentResponse("success", data = items2))
+                    row("h1", AgentResponse("success", data = items1, regexp = regexps1)),
+                    row("h2", AgentResponse("success", data = items2, regexp = regexps1))
             )
             forAll(table) { h, r ->
                 checkProcess(AgentRequest("active checks", h), r)
