@@ -6,7 +6,7 @@ import com.google.common.cache.CacheLoader
 
 object CacheUtils {
 
-    //TODO consider to user caffeine
+    //TODO consider to use caffeine
 
     fun <K, V> newCache(spec: String, loader: (K?) -> V): Cache<K, V> {
         val cl = CacheLoader.from(loader)

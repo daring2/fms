@@ -17,13 +17,13 @@ import java.net.ServerSocket
 import java.net.Socket
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors.newCachedThreadPool
+import java.util.concurrent.Executors.newFixedThreadPool
 import java.util.concurrent.atomic.AtomicBoolean
 
 class AgentActiveClient(
         val port: Int = 10051,
         val readTimeout: Int = 3000,
-        val executor: ExecutorService = newCachedThreadPool(),
+        val executor: ExecutorService = newFixedThreadPool(2),
         val circuitBreaker: CircuitBreaker = newCircuitBreaker(5, 1000),
         val socketProvider: ServerSocketProvider = ServerSocketProvider()
 ) : AutoCloseable {
