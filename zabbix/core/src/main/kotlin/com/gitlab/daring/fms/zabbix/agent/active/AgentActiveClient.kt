@@ -33,7 +33,7 @@ class AgentActiveClient(
      * Listener of new item values received from Zabbix agent
      */
     @Volatile
-    var valueListener:  (List<ItemValue>) -> Unit = {}
+    var valueListener: (List<ItemValue>) -> Unit = {}
 
     constructor(c: Config) : this(
             c.getInt("port"),
