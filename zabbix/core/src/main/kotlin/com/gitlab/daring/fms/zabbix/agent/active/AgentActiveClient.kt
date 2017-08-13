@@ -7,28 +7,22 @@ import com.gitlab.daring.fms.common.network.ServerSocketProvider
 import com.gitlab.daring.fms.zabbix.model.Item
 import com.gitlab.daring.fms.zabbix.model.ItemValue
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.parseJsonResponse
+import com.gitlab.daring.fms.zabbix.util.ZabbixSocketServer
 import com.typesafe.config.Config
-import org.slf4j.LoggerFactory.getLogger
 import java.net.ServerSocket
 import java.net.Socket
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors.newFixedThreadPool
-import java.util.concurrent.atomic.AtomicBoolean
 
 class AgentActiveClient(
         val port: Int = 10051,
         val readTimeout: Int = 3000,
         val executor: ExecutorService = newFixedThreadPool(2),
         val socketProvider: ServerSocketProvider = ServerSocketProvider()
-) : AutoCloseable {
+) : ZabbixSocketServer() {
 
-    private val logger = getLogger(javaClass)
-
-    private val started = AtomicBoolean()
     private val hostItems = ConcurrentHashMap<String, Map<String, Item>>()
-    @Volatile
-    internal var serverSocket: ServerSocket? = null
 
     /**
      * Global regular expressions
@@ -42,56 +36,32 @@ class AgentActiveClient(
     @Volatile
     var valueListener:  (List<ItemValue>) -> Unit = {}
 
-    val isStarted get() = started.get()
-
     constructor(c: Config) : this(
             c.getInt("port"),
             c.getMillis("readTimeout").toInt(),
             newExecutor(c.getConfig("executor"))
     )
 
-    fun start() {
-        if (started.compareAndSet(false, true))
-            executor.execute(this::run)
-    }
-
-    fun stop() {
-        if (started.compareAndSet(true, false)) {
-            serverSocket?.close()
-            serverSocket = null
-        }
-    }
-
-    override fun close() = stop()
-
     fun setItems(host: String, items: Collection<Item>) {
         val m = items.map { it.key to it }.toMap()
         hostItems.put(host, m)
     }
 
-    private fun run() {
-        socketProvider.createServerSocket(port).use {
-            serverSocket = it
-            while (isStarted && !it.isClosed) {
-                tryRun("accept") {
-                    val socket = it.accept()
-                    executor.execute { processRequest(socket) }
-                }
-            }
-        }
+    override fun executor() = executor
+
+    override fun createServerSocket(): ServerSocket {
+        return socketProvider.createServerSocket(port)
     }
 
-    private fun processRequest(socket: Socket) = tryRun("process") {
-        socket.use {
-            it.soTimeout = readTimeout
-            val req = parseJsonResponse<AgentRequest>(it.getInputStream())
-            val response = when (req.request) {
-                "active checks" -> buildCheckResponse(req)
-                "agent data" -> processDataRequest(req)
-                else -> AgentResponse("failed", "invalid request")
-            }
-            JsonMapper.writeValue(it.getOutputStream(), response)
+    override fun process(socket: Socket) {
+        socket.soTimeout = readTimeout
+        val req = parseJsonResponse<AgentRequest>(socket.getInputStream())
+        val response = when (req.request) {
+            "active checks" -> buildCheckResponse(req)
+            "agent data" -> processDataRequest(req)
+            else -> AgentResponse("failed", "invalid request")
         }
+        JsonMapper.writeValue(socket.getOutputStream(), response)
     }
 
     private fun buildCheckResponse(req: AgentRequest): AgentResponse {
@@ -113,14 +83,6 @@ class AgentActiveClient(
 
     private fun updateItem(v: ItemValue) {
         hostItems[v.host]?.get(v.key)?.applyValue(v)
-    }
-
-    private fun tryRun(action: String, f: () -> Unit) {
-        try {
-            f.invoke()
-        } catch (e: Exception) {
-            if (isStarted) logger.warn("$action error", e)
-        }
     }
 
 }
