@@ -8,4 +8,11 @@ internal data class AgentRequest(
         val request: String,
         val host: String? = null,
         val data: List<ItemValue>? = null
-)
+) {
+
+    companion object {
+        val ActiveChecks = "active checks"
+        val AgentData = "agent data"
+    }
+
+}

@@ -1,40 +1,42 @@
 package com.gitlab.daring.fms.common.config
 
 import com.gitlab.daring.fms.common.config.ConfigUtils.configFromString
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import com.google.common.net.HostAndPort
+import io.kotlintest.matchers.shouldBe
+import io.kotlintest.specs.FunSpec
 
-class ConfigExtensionTest {
+class ConfigExtensionTest : FunSpec({
 
-    @Test
-    fun testGetMillis() {
-        assertEquals(10, configFromString("p=10").getMillis("p"))
-        assertEquals(10000, configFromString("p=10s").getMillis("p"))
-        assertEquals(600000, configFromString("p=10m").getMillis("p"))
+    test("getMillis") {
+        configFromString("p=10").getMillis("p") shouldBe 10L
+        configFromString("p=10s").getMillis("p") shouldBe 10000L
+        configFromString("p=10m").getMillis("p") shouldBe 600000L
     }
 
-    @Test
-    fun testToMap() {
+    test("toMap") {
         val c1 = configFromString("p1=v1,p2=2")
-        assertEquals(hashMapOf("p1" to "v1", "p2" to 2), c1.toMap())
+        hashMapOf("p1" to "v1", "p2" to 2) shouldBe c1.toMap()
     }
 
-    @Test
-    fun testToBean() {
+    test("toBean") {
         val c1 = configFromString("b1 { p1=v1,p2=2 }")
         val b1 = TestBean("v1", 2)
-        assertEquals(b1, c1.getConfig("b1").toBean<TestBean>())
-        assertEquals(b1, c1.getBean<TestBean>("b1"))
+        c1.getConfig("b1").toBean<TestBean>() shouldBe b1
+        c1.getBean<TestBean>("b1") shouldBe b1
     }
 
-    @Test
-    fun testGetOpt() {
+    test("getOpt") {
         val c1 = configFromString("p1=10")
-        assertEquals(10, c1.getOpt { getInt("p1") })
-        assertEquals(null, c1.getOpt { getInt("p2") })
+        c1.getOpt { getInt("p1") } shouldBe 10
+        c1.getOpt { getInt("p2") } shouldBe null
     }
 
-}
+    test("getHostAndPort") {
+        val cl = configFromString("p1=\"h1:10\"")
+        cl.getHostAndPort("p1") shouldBe HostAndPort.fromParts("h1", 10)
+    }
+
+})
 
 data class TestBean(
         val p1: String,

@@ -3,6 +3,8 @@ package com.gitlab.daring.fms.zabbix.agent.active
 import com.gitlab.daring.fms.common.concurrent.ConcurrentUtils.newExecutor
 import com.gitlab.daring.fms.common.config.getMillis
 import com.gitlab.daring.fms.common.json.JsonUtils.JsonMapper
+import com.gitlab.daring.fms.zabbix.agent.active.AgentRequest.Companion.ActiveChecks
+import com.gitlab.daring.fms.zabbix.agent.active.AgentRequest.Companion.AgentData
 import com.gitlab.daring.fms.zabbix.model.Item
 import com.gitlab.daring.fms.zabbix.model.ItemValue
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.parseJsonResponse
@@ -47,8 +49,8 @@ class AgentActiveClient(
     override fun process(socket: Socket) {
         val req = parseJsonResponse<AgentRequest>(socket.getInputStream())
         val response = when (req.request) {
-            "active checks" -> buildCheckResponse(req)
-            "agent data" -> processDataRequest(req)
+            ActiveChecks -> buildCheckResponse(req)
+            AgentData -> processDataRequest(req)
             else -> AgentResponse("failed", "invalid request")
         }
         JsonMapper.writeValue(socket.getOutputStream(), response)

@@ -11,12 +11,12 @@ import com.gitlab.daring.fms.zabbix.util.ZabbixSocketServer
 import com.typesafe.config.Config
 import java.net.Socket
 import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
+import java.util.concurrent.Executors.newFixedThreadPool
 
 class AgentPassiveServer(
         override val port: Int = 10050,
         override val readTimeout: Int = 3000,
-        override val executor: ExecutorService = Executors.newFixedThreadPool(2)
+        override val executor: ExecutorService = newFixedThreadPool(2)
 ) : ZabbixSocketServer() {
 
     //TODO refactor
