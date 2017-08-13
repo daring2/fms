@@ -4,14 +4,13 @@ import io.kotlintest.matchers.shouldBe
 import io.kotlintest.specs.FunSpec
 import org.awaitility.Awaitility.await
 import org.mockito.Mockito.verify
-import java.net.ServerSocket
 import java.net.Socket
 import java.util.concurrent.Executors.newFixedThreadPool
 
 class ZabbixSocketServerTest : FunSpec({
 
-    fun testServer(name: String, f: TestSockerServer.() -> Unit) {
-        test(name) { TestSockerServer().use(f) }
+    fun testServer(name: String, f: TestSocketServer.() -> Unit) {
+        test(name) { TestSocketServer().use(f) }
     }
 
     testServer("start/stop") {
@@ -35,23 +34,22 @@ class ZabbixSocketServerTest : FunSpec({
         start()
         sp.accept()
         processSocket shouldBe sp.socket
+        verify(sp.socket).soTimeout = 100
         verify(sp.socket).close()
     }
 
 })
 
-class TestSockerServer : ZabbixSocketServer() {
+class TestSocketServer : ZabbixSocketServer() {
 
     val sp = MockSocketProvider()
-    val executor = newFixedThreadPool(2)
+    override val port = 10
+    override val readTimeout = 100
+    override val socketProvider = sp.serverProvider
+    override val executor = newFixedThreadPool(2)
+
     @Volatile
     var processSocket: Socket? = null
-
-    override fun executor() = executor
-
-    override fun createServerSocket(): ServerSocket {
-        return sp.serverProvider.createServerSocket(10)
-    }
 
     override fun process(socket: Socket) {
         processSocket = socket

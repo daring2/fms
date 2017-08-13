@@ -12,7 +12,6 @@ import io.kotlintest.properties.headers
 import io.kotlintest.properties.row
 import io.kotlintest.properties.table
 import io.kotlintest.specs.FunSpec
-import org.awaitility.Awaitility.await
 import org.mockito.Mockito.verify
 import java.util.concurrent.ThreadPoolExecutor
 
@@ -28,23 +27,6 @@ class AgentActiveClientTest : FunSpec() {
             val exec = cl.executor as ThreadPoolExecutor
             exec.corePoolSize shouldBe 3
             exec.maximumPoolSize shouldBe 4
-        }
-
-        testWithContext("start/stop") {
-            cl.isStarted shouldBe false
-            cl.serverSocket shouldBe null
-
-            cl.start()
-            cl.isStarted shouldBe true
-            await().until { cl.serverSocket != null }
-            val serverSocket = cl.serverSocket
-            verify(sp.serverProvider).createServerSocket(10)
-            serverSocket?.isClosed shouldBe false
-
-            cl.stop()
-            cl.isStarted shouldBe false
-            await().until { cl.serverSocket == null }
-            serverSocket?.isClosed shouldBe true
         }
 
         testWithContext("invalid request") {
@@ -105,7 +87,6 @@ class AgentActiveClientTest : FunSpec() {
             sp.setJsonInput(TestHeader, req)
             sp.accept()
             sp.assertJsonOutput(res)
-            verify(sp.socket).soTimeout = 100
             verify(sp.socket).close()
         }
 

@@ -9,17 +9,16 @@ import com.gitlab.daring.fms.zabbix.model.ItemValue
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.parseJsonResponse
 import com.gitlab.daring.fms.zabbix.util.ZabbixSocketServer
 import com.typesafe.config.Config
-import java.net.ServerSocket
 import java.net.Socket
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors.newFixedThreadPool
 
 class AgentActiveClient(
-        val port: Int = 10051,
-        val readTimeout: Int = 3000,
-        val executor: ExecutorService = newFixedThreadPool(2),
-        val socketProvider: ServerSocketProvider = ServerSocketProvider()
+        override val port: Int = 10051,
+        override val readTimeout: Int = 3000,
+        override val executor: ExecutorService = newFixedThreadPool(2),
+        override val socketProvider: ServerSocketProvider = ServerSocketProvider()
 ) : ZabbixSocketServer() {
 
     private val hostItems = ConcurrentHashMap<String, Map<String, Item>>()
@@ -47,14 +46,7 @@ class AgentActiveClient(
         hostItems.put(host, m)
     }
 
-    override fun executor() = executor
-
-    override fun createServerSocket(): ServerSocket {
-        return socketProvider.createServerSocket(port)
-    }
-
     override fun process(socket: Socket) {
-        socket.soTimeout = readTimeout
         val req = parseJsonResponse<AgentRequest>(socket.getInputStream())
         val response = when (req.request) {
             "active checks" -> buildCheckResponse(req)

@@ -1,5 +1,6 @@
 package com.gitlab.daring.fms.zabbix.util
 
+import com.gitlab.daring.fms.common.network.ServerSocketProvider
 import org.slf4j.LoggerFactory
 import java.net.ServerSocket
 import java.net.Socket
@@ -23,11 +24,14 @@ abstract class ZabbixSocketServer : AutoCloseable {
 
     val isStarted get() = started.get()
 
-    abstract fun executor(): ExecutorService
+    abstract val port: Int
+    abstract val readTimeout: Int
+    abstract val executor: ExecutorService
+    abstract val socketProvider: ServerSocketProvider
 
     fun start() {
         if (started.compareAndSet(false, true))
-            executor().execute(this::run)
+            executor.execute(this::run)
     }
 
     fun stop() {
@@ -40,11 +44,11 @@ abstract class ZabbixSocketServer : AutoCloseable {
     override fun close() = stop()
 
     private fun run() {
-        createServerSocket().use {
+        socketProvider.createServerSocket(port).use {
             serverSocket = it
             while (isStarted && !it.isClosed) try {
                 val socket = it.accept()
-                executor().execute { tryProcess(socket) }
+                executor.execute { tryProcess(socket) }
             } catch (e: Exception) {
                 onError("accept", e)
                 if (isStarted)
@@ -53,10 +57,9 @@ abstract class ZabbixSocketServer : AutoCloseable {
         }
     }
 
-    protected abstract fun createServerSocket(): ServerSocket
-
     private fun tryProcess(socket: Socket) {
         try {
+            socket.soTimeout = readTimeout
             socket.use(this::process)
         } catch (e: Exception) {
             onError("process", e)
