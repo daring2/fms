@@ -7,7 +7,6 @@ import com.gitlab.daring.fms.zabbix.model.ItemValue
 import com.gitlab.daring.fms.zabbix.util.MockSocketProvider
 import com.gitlab.daring.fms.zabbix.util.ZabbixTestUtils.TestHeader
 import io.kotlintest.matchers.shouldBe
-import io.kotlintest.mock.`when`
 import io.kotlintest.properties.forAll
 import io.kotlintest.properties.headers
 import io.kotlintest.properties.row
@@ -16,27 +15,19 @@ import io.kotlintest.specs.FunSpec
 import org.awaitility.Awaitility.await
 import org.mockito.Mockito.verify
 import java.util.concurrent.ThreadPoolExecutor
-import java.util.concurrent.TimeUnit
 
 class AgentActiveClientTest : FunSpec() {
 
     init {
 
         test("init") {
-            val c = configFromString("{" +
-                    "port=1, readTimeout=2s, " +
-                    "executor { size=3, maxSize=4 }, " +
-                    "сircuitBreaker { threshold = 10, delay=5s } " +
-                    "}")
+            val c = configFromString("{ port=1, readTimeout=2s,  executor { size=3, maxSize=4 }}")
             val cl = AgentActiveClient(c)
             cl.port shouldBe 1
             cl.readTimeout shouldBe 2000
             val exec = cl.executor as ThreadPoolExecutor
             exec.corePoolSize shouldBe 3
             exec.maximumPoolSize shouldBe 4
-            val cb = cl.circuitBreaker
-            cb.failureThreshold.numerator shouldBe 10
-            cb.delay.toMillis() shouldBe 5000L
         }
 
         testWithContext("start/stop") {
@@ -89,16 +80,6 @@ class AgentActiveClientTest : FunSpec() {
             items1[1] shouldBe Item("i12")
         }
 
-        testWithContext("circuitBreaker") {
-            val cb = cl.circuitBreaker
-                    .withFailureThreshold(1)
-                    .withDelay(100, TimeUnit.MILLISECONDS)
-            sp.acceptQueue.put(sp.socket)
-            `when`(sp.serverSocket.accept()).thenThrow(RuntimeException())
-            cb.isOpen shouldBe false
-            cl.start()
-            await().until { cb.isOpen }
-        }
     }
 
     internal fun testWithContext(name: String, f: TestContext.() -> Unit) {
