@@ -71,12 +71,13 @@ class AgentActiveClientTest : FunSpec() {
     internal class TestContext : AutoCloseable {
 
         val sp = MockSocketProvider()
-        val cl = AgentActiveClient(10, 100, socketProvider = sp.serverProvider)
+        val cl = AgentActiveClient(10, 100)
         val items1 = listOf(Item("i11"), Item("i12"))
         val items2 = listOf(Item("i21"), Item("i22"))
         val values = ArrayList<ItemValue>()
 
         init {
+            cl.socketProvider = sp.serverProvider
             cl.setItems("h1", items1)
             cl.setItems("h2", items2)
             cl.valueListener = { vs -> values.addAll(vs) }

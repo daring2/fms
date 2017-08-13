@@ -45,8 +45,11 @@ class TestSocketServer : ZabbixSocketServer() {
     val sp = MockSocketProvider()
     override val port = 10
     override val readTimeout = 100
-    override val socketProvider = sp.serverProvider
     override val executor = newFixedThreadPool(2)
+
+    init {
+        socketProvider = sp.serverProvider
+    }
 
     @Volatile
     var processSocket: Socket? = null

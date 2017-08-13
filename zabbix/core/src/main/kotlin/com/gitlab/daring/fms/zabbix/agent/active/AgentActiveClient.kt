@@ -3,7 +3,6 @@ package com.gitlab.daring.fms.zabbix.agent.active
 import com.gitlab.daring.fms.common.concurrent.ConcurrentUtils.newExecutor
 import com.gitlab.daring.fms.common.config.getMillis
 import com.gitlab.daring.fms.common.json.JsonUtils.JsonMapper
-import com.gitlab.daring.fms.common.network.ServerSocketProvider
 import com.gitlab.daring.fms.zabbix.model.Item
 import com.gitlab.daring.fms.zabbix.model.ItemValue
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.parseJsonResponse
@@ -17,8 +16,7 @@ import java.util.concurrent.Executors.newFixedThreadPool
 class AgentActiveClient(
         override val port: Int = 10051,
         override val readTimeout: Int = 3000,
-        override val executor: ExecutorService = newFixedThreadPool(2),
-        override val socketProvider: ServerSocketProvider = ServerSocketProvider()
+        override val executor: ExecutorService = newFixedThreadPool(2)
 ) : ZabbixSocketServer() {
 
     private val hostItems = ConcurrentHashMap<String, Map<String, Item>>()

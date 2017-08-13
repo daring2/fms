@@ -16,6 +16,9 @@ abstract class ZabbixSocketServer : AutoCloseable {
     @Volatile
     internal var serverSocket: ServerSocket? = null
 
+    @Volatile
+    var socketProvider = ServerSocketProvider()
+
     /**
      * Delay after socket accept errors
      */
@@ -27,7 +30,6 @@ abstract class ZabbixSocketServer : AutoCloseable {
     abstract val port: Int
     abstract val readTimeout: Int
     abstract val executor: ExecutorService
-    abstract val socketProvider: ServerSocketProvider
 
     fun start() {
         if (started.compareAndSet(false, true))
