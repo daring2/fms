@@ -22,7 +22,7 @@ class AgentPassiveClient(
     fun request(item: Item): ItemValue {
         val socket = socketProvider.createSocket(host, port)
         socket.use {
-            val req = "${item.key}\n".toByteArray(Charsets.UTF_8)
+            val req = "${item.key}\n".toByteArray()
             socket.getOutputStream().write(req)
             val rbs = socket.getInputStream().readBytes()
             return processResponse(item, rbs)
