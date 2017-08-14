@@ -9,4 +9,13 @@ internal data class AgentResponse(
         val info: String? = null,
         val data: Collection<Item>? = null,
         val regexp: Collection<CheckRegexp>? = null
-)
+) {
+
+    val success get() = response == Success
+
+    companion object {
+        val Success = "success"
+        val Failed = "failed"
+    }
+
+}

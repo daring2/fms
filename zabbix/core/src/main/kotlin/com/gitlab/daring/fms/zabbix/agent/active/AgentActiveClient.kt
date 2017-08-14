@@ -5,6 +5,8 @@ import com.gitlab.daring.fms.common.config.getMillis
 import com.gitlab.daring.fms.common.json.JsonUtils.JsonMapper
 import com.gitlab.daring.fms.zabbix.agent.active.AgentRequest.Companion.ActiveChecks
 import com.gitlab.daring.fms.zabbix.agent.active.AgentRequest.Companion.AgentData
+import com.gitlab.daring.fms.zabbix.agent.active.AgentResponse.Companion.Failed
+import com.gitlab.daring.fms.zabbix.agent.active.AgentResponse.Companion.Success
 import com.gitlab.daring.fms.zabbix.model.Item
 import com.gitlab.daring.fms.zabbix.model.ItemValue
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.parseJsonResponse
@@ -51,7 +53,7 @@ class AgentActiveClient(
         val response = when (req.request) {
             ActiveChecks -> buildCheckResponse(req)
             AgentData -> processDataRequest(req)
-            else -> AgentResponse("failed", "invalid request")
+            else -> AgentResponse(Failed, "invalid request")
         }
         JsonMapper.writeValue(socket.getOutputStream(), response)
     }
@@ -59,9 +61,9 @@ class AgentActiveClient(
     private fun buildCheckResponse(req: AgentRequest): AgentResponse {
         val items = hostItems[req.host]
         if (items != null) {
-            return AgentResponse("success", data = items.values, regexp = regexps)
+            return AgentResponse(Success, data = items.values, regexp = regexps)
         } else {
-            return AgentResponse("failed", "host ${req.host} not found")
+            return AgentResponse(Failed, "host ${req.host} not found")
         }
     }
 
