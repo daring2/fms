@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.gitlab.daring.fms.zabbix.model.ItemValue
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-internal data class AgentRequest(
+data class AgentRequest(
         val request: String,
         val host: String? = null,
         val data: List<ItemValue>? = null
