@@ -17,7 +17,7 @@ class AgentPassiveServerTest : FunSpec() {
 
     init {
 
-        test("init") {
+        test("constructors") {
             val c = configFromString("{ port=1, readTimeout=2s,  executor { size=3, maxSize=4 }}")
             val cl = AgentPassiveServer(c)
             cl.port shouldBe 1
@@ -48,8 +48,7 @@ class AgentPassiveServerTest : FunSpec() {
             srv.socketProvider = sp.serverProvider
             srv.valueSupplier = { key ->
                 if (key.contains("fail")) throw RuntimeException(key)
-                val state = if (key.contains("err")) 1 else 0
-                ItemValue("", key, "$key.v", state = state)
+                ItemValue("$key.v", key.contains("err"))
             }
         }
 

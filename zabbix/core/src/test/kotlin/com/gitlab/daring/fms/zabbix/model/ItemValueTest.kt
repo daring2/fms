@@ -1,33 +1,41 @@
 package com.gitlab.daring.fms.zabbix.model
 
-import org.junit.Assert.*
-import org.junit.Test
+import io.kotlintest.matchers.shouldBe
+import io.kotlintest.specs.FunSpec
 import java.time.Instant
 
-class ItemValueTest {
+class ItemValueTest : FunSpec({
 
-    @Test
-    fun testWithError() {
-        val i1 = ItemValue("h1", "i1", "v1")
-        assertEquals(0, i1.state)
-        assertEquals("v1", i1.value)
-        assertEquals(false, i1.isError)
+    test("constructors") {
+        val v1 = ItemValue("v1", false)
+        v1.value shouldBe "v1"
+        v1.state shouldBe 0
 
-        val i2 = i1.withError("err1")
-        assertEquals(1, i2.state)
-        assertEquals("err1", i2.value)
-        assertEquals(true, i2.isError)
+        val v2 = ItemValue("v2", true)
+        v2.value shouldBe "v2"
+        v2.state shouldBe 1
     }
 
-    @Test
-    fun testWithTime() {
-        val i1 = ItemValue("h1", "i1", "v1").withTime(null)
-        assertEquals(null, i1.clock)
-        assertEquals(null, i1.ns)
+    test("withError") {
+        val v1 = ItemValue("h1", "i1", "v1")
+        v1.state shouldBe 0
+        v1.value shouldBe "v1"
+        v1.isError shouldBe false
 
-        val i2 = i1.withTime(Instant.ofEpochMilli(2003))
-        assertEquals(2L, i2.clock)
-        assertEquals(3000000, i2.ns)
+        val v2 = v1.withError("err1")
+        v2.state shouldBe 1
+        v2.value shouldBe "err1"
+        v2.isError shouldBe true
     }
 
-}
+    test("withTime") {
+        val v1 = ItemValue("h1", "i1", "v1").withTime(null)
+        v1.clock shouldBe null
+        v1.ns shouldBe null
+
+        val v2 = v1.withTime(Instant.ofEpochMilli(2003))
+        v2.clock shouldBe 2L
+        v2.ns shouldBe 3000000
+    }
+
+})

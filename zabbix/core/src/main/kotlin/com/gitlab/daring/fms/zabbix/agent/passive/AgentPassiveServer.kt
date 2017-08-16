@@ -21,8 +21,8 @@ class AgentPassiveServer(
 
     //TODO refactor
     @Volatile
-    var valueSupplier: (String) -> ItemValue = { key ->
-        ItemValue("", key, "Unsupported item key", state = 1)
+    var valueSupplier: (String) -> ItemValue = { _ ->
+        ItemValue("Unsupported item key", true)
     }
 
     constructor(c: Config) : this(

@@ -14,7 +14,7 @@ import org.mockito.Mockito.verify
 
 class AgentActiveServerTest : FunSpec({
 
-    test("create from config") {
+    test("create") {
         val c1 = configFromString("{server=\"h1:10\", connectTimeout=1s, readTimeout=2s}")
         val srv1 = AgentActiveServer.create(c1)
         srv1.serverHost shouldBe "h1"

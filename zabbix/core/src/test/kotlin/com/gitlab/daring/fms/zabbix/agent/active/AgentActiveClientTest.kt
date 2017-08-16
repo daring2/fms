@@ -22,7 +22,7 @@ class AgentActiveClientTest : FunSpec() {
 
     init {
 
-        test("init") {
+        test("constructors") {
             val c = configFromString("{ port=1, readTimeout=2s,  executor { size=3, maxSize=4 }}")
             val cl = AgentActiveClient(c)
             cl.port shouldBe 1

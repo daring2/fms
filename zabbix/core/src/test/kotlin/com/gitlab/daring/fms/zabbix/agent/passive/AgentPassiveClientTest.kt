@@ -15,7 +15,7 @@ import org.mockito.Mockito.verify
 
 class AgentPassiveClientTest : FunSpec({
 
-    test("init") {
+    test("constructors") {
         val c = configFromString("{host=h1, port=10, connectTimeout=1s, readTimeout=2s}")
         val sender = AgentPassiveClient(c)
         sender.host shouldBe "h1"

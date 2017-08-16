@@ -18,6 +18,9 @@ data class ItemValue(
     
     val isError @JsonIgnore get() = state == 1
 
+    constructor(value: String, isError: Boolean):
+            this("", "", value, if (isError) 1 else 0)
+
     fun withError(error: String): ItemValue {
         return copy(value = error, state = 1)
     }
