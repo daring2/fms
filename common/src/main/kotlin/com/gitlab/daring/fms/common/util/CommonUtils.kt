@@ -1,6 +1,6 @@
 package com.gitlab.daring.fms.common.util
 
-import com.gitlab.daring.fms.common.config.ConfigUtils.configFromProps
+import com.gitlab.daring.fms.common.config.configFromProps
 import java.time.Duration
 
 object CommonUtils {
