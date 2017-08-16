@@ -2,6 +2,9 @@ package com.gitlab.daring.fms.zabbix.agent.active
 
 import com.gitlab.daring.fms.common.config.ConfigUtils.configFromString
 import com.gitlab.daring.fms.common.util.closeQuietly
+import com.gitlab.daring.fms.zabbix.agent.active.AgentRequest.Companion.AgentData
+import com.gitlab.daring.fms.zabbix.agent.active.AgentResponse.Companion.Failed
+import com.gitlab.daring.fms.zabbix.agent.active.AgentResponse.Companion.Success
 import com.gitlab.daring.fms.zabbix.model.Item
 import com.gitlab.daring.fms.zabbix.model.ItemValue
 import com.gitlab.daring.fms.zabbix.util.MockSocketProvider
@@ -31,7 +34,7 @@ class AgentActiveClientTest : FunSpec() {
 
         testWithContext("invalid request") {
             cl.start()
-            checkProcess(AgentRequest("none"), AgentResponse("failed", "invalid request"))
+            checkProcess(AgentRequest("none"), AgentResponse(Failed, "invalid request"))
         }
 
         testWithContext("active checks") {
@@ -40,9 +43,9 @@ class AgentActiveClientTest : FunSpec() {
             cl.start()
             val table = table(
                     headers("host", "response"),
-                    row("h0", AgentResponse("failed", "host h0 not found")),
-                    row("h1", AgentResponse("success", data = items1, regexp = regexps1)),
-                    row("h2", AgentResponse("success", data = items2, regexp = regexps1))
+                    row("h0", AgentResponse(Failed, "host h0 not found")),
+                    row("h1", AgentResponse(Success, data = items1, regexp = regexps1)),
+                    row("h2", AgentResponse(Success, data = items2, regexp = regexps1))
             )
             forAll(table) { h, r ->
                 checkProcess(AgentRequest("active checks", h), r)
@@ -52,11 +55,11 @@ class AgentActiveClientTest : FunSpec() {
         testWithContext("agent data") {
             values shouldBe emptyList<ItemValue>()
             cl.start()
-            val req1 = AgentRequest("agent data", data = listOf(
+            val req1 = AgentRequest(AgentData, data = listOf(
                     ItemValue("h1", "i11", "v1", lastlogsize = 1, mtime = 2),
                     ItemValue("h1", "i12", "v2")
             ))
-            checkProcess(req1, AgentResponse("success", ""))
+            checkProcess(req1, AgentResponse(Success, ""))
             values shouldBe req1.data
             items1[0] shouldBe Item("i11", lastlogsize = 1, mtime = 2)
             items1[1] shouldBe Item("i12")

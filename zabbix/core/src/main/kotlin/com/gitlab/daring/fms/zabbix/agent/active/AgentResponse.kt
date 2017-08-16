@@ -1,5 +1,6 @@
 package com.gitlab.daring.fms.zabbix.agent.active
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.gitlab.daring.fms.zabbix.model.Item
 
@@ -11,7 +12,7 @@ data class AgentResponse(
         val regexp: Collection<CheckRegexp>? = null
 ) {
 
-    val success get() = response == Success
+    val success @JsonIgnore get() = response == Success
 
     companion object {
         val Success = "success"
