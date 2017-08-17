@@ -1,13 +1,15 @@
 package com.gitlab.daring.fms.zabbix.agent.active
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.gitlab.daring.fms.zabbix.model.ItemValue
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class AgentRequest(
         val request: String,
         val host: String? = null,
-        val data: List<ItemValue>? = null
+        val data: List<ItemValue>? = null,
+        val clock: Long? = null,
+        val ns: Int? = null
 ) {
 
     companion object {

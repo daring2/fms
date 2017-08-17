@@ -20,7 +20,7 @@ internal object ZabbixSenderUtils {
     /**
      * Adds time fields (clock, ns) to given [JsonNode]
      */
-    fun addTimeFields(n: ObjectNode, time: Instant, nanos: Int): Unit {
+    fun addTimeFields(n: ObjectNode, time: Instant, nanos: Int) {
         n.put("clock", time.epochSecond)
         n.put("ns", time.nano + nanos)
     }
