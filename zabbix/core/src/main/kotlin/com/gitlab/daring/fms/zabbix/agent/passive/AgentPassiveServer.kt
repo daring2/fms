@@ -2,11 +2,10 @@ package com.gitlab.daring.fms.zabbix.agent.passive
 
 import com.gitlab.daring.fms.common.concurrent.ConcurrentUtils.newExecutor
 import com.gitlab.daring.fms.common.config.getMillis
+import com.gitlab.daring.fms.zabbix.metric.ErrorMetricSupplier
 import com.gitlab.daring.fms.zabbix.metric.MetricParser
 import com.gitlab.daring.fms.zabbix.metric.MetricSupplier
-import com.gitlab.daring.fms.zabbix.metric.MetricUtils.newMetricSupplier
 import com.gitlab.daring.fms.zabbix.model.Item
-import com.gitlab.daring.fms.zabbix.model.ItemValue
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.HeaderSize
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.ZbxError
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.ZbxNotSupported
@@ -25,9 +24,7 @@ class AgentPassiveServer(
 ) : ZabbixSocketServer() {
 
     @Volatile
-    var metricSupplier: MetricSupplier = newMetricSupplier { m ->
-        ItemValue("Unsupported item key", true, m.item)
-    }
+    var metricSupplier: MetricSupplier = ErrorMetricSupplier
 
     constructor(c: Config) : this(
             c.getInt("port"),
