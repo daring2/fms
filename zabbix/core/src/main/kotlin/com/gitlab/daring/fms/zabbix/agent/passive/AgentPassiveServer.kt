@@ -36,7 +36,7 @@ class AgentPassiveServer(
         val line = socket.getInputStream().bufferedReader().readLine()
         val key = if (line.startsWith("ZBXD")) line.substring(HeaderSize) else line
         val result = try {
-            val m = metricParser.parseKey(Item(key))
+            val m = metricParser.getMetric(Item(key))
             val v = metricSupplier.getValue(m)
             if (v.isError) ZbxNotSupported + v.value else v.value
         } catch (e: Exception) {
