@@ -2,6 +2,7 @@ package com.gitlab.daring.fms.zabbix.agent.passive
 
 import com.gitlab.daring.fms.common.config.ConfigUtils.configFromString
 import com.gitlab.daring.fms.common.util.closeQuietly
+import com.gitlab.daring.fms.zabbix.metric.MetricUtils.newMetricSupplier
 import com.gitlab.daring.fms.zabbix.model.ItemValue
 import com.gitlab.daring.fms.zabbix.util.MockSocketProvider
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.ZbxError
@@ -33,6 +34,9 @@ class AgentPassiveServerTest : FunSpec() {
             checkProcess("err1", "${ZbxNotSupported}err1.v")
             checkProcess("fail1", ZbxError)
         }
+
+        //TODO test metric parser usage
+
     }
 
     internal fun testWithContext(name: String, f: TestContext.() -> Unit) {
@@ -46,7 +50,8 @@ class AgentPassiveServerTest : FunSpec() {
 
         init {
             srv.socketProvider = sp.serverProvider
-            srv.valueSupplier = { key ->
+            srv.metricSupplier = newMetricSupplier { m ->
+                val key = m.name
                 if (key.contains("fail")) throw RuntimeException(key)
                 ItemValue("$key.v", key.contains("err"))
             }

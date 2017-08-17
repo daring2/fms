@@ -2,6 +2,10 @@ package com.gitlab.daring.fms.zabbix.agent.passive
 
 import com.gitlab.daring.fms.common.concurrent.ConcurrentUtils.newExecutor
 import com.gitlab.daring.fms.common.config.getMillis
+import com.gitlab.daring.fms.zabbix.metric.MetricParser
+import com.gitlab.daring.fms.zabbix.metric.MetricSupplier
+import com.gitlab.daring.fms.zabbix.metric.MetricUtils.newMetricSupplier
+import com.gitlab.daring.fms.zabbix.model.Item
 import com.gitlab.daring.fms.zabbix.model.ItemValue
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.HeaderSize
 import com.gitlab.daring.fms.zabbix.util.ZabbixProtocolUtils.ZbxError
@@ -16,13 +20,13 @@ import java.util.concurrent.Executors.newFixedThreadPool
 class AgentPassiveServer(
         override val port: Int = 10050,
         override val readTimeout: Int = 3000,
-        override val executor: ExecutorService = newFixedThreadPool(2)
+        override val executor: ExecutorService = newFixedThreadPool(2),
+        val metricParser: MetricParser = MetricParser.Default
 ) : ZabbixSocketServer() {
 
-    //TODO refactor
     @Volatile
-    var valueSupplier: (String) -> ItemValue = { _ ->
-        ItemValue("Unsupported item key", true)
+    var metricSupplier: MetricSupplier = newMetricSupplier { m ->
+        ItemValue("Unsupported item key", true, m.item)
     }
 
     constructor(c: Config) : this(
@@ -35,7 +39,8 @@ class AgentPassiveServer(
         val line = socket.getInputStream().bufferedReader().readLine()
         val key = if (line.startsWith("ZBXD")) line.substring(HeaderSize) else line
         val result = try {
-            val v = valueSupplier(key)
+            val m = metricParser.parseKey(Item(key))
+            val v = metricSupplier.getValue(m)
             if (v.isError) ZbxNotSupported + v.value else v.value
         } catch (e: Exception) {
             ZbxError
