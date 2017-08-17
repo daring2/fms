@@ -13,7 +13,9 @@ data class Item(
         @Volatile
         var mtime: Long = 0,
         @JsonIgnore
-        val charset: String = "UTF-8"
+        val charset: String = "UTF-8",
+        @JsonIgnore
+        val host: String = ""
 ) {
 
     fun applyValue(v: ItemValue): Item {
