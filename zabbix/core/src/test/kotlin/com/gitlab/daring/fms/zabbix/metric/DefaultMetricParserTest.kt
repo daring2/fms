@@ -16,8 +16,11 @@ class DefaultMetricParserTest : FunSpec({
 
     test("cache") {
         val p = DefaultMetricParser(16)
-        val m1 = p.getMetric(Item("i1"))
-        (p.getMetric(Item("i1")).name === m1.name) shouldBe true
+        val i1 = Item("i1[p1]")
+        val m1 = p.getMetric(i1)
+        (p.getMetric(i1).name === m1.name) shouldBe true
+        p.cache.invalidateAll()
+        (p.getMetric(i1).name === m1.name) shouldBe false
     }
 
 })
