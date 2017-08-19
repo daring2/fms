@@ -4,13 +4,15 @@ import com.fasterxml.jackson.core.JsonGenerator.Feature.AUTO_CLOSE_TARGET
 import com.fasterxml.jackson.core.JsonParser.Feature.*
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 
 object JsonUtils {
 
-    val JsonMapper = createMapper()
+    val JsonMapper = createJsonMapper()
+    val YamlMapper = ObjectMapper(YAMLFactory())
 
-    fun createMapper(): ObjectMapper {
+    fun createJsonMapper(): ObjectMapper {
         val m = ObjectMapper()
         m.configure(ALLOW_UNQUOTED_FIELD_NAMES, true)
         m.configure(ALLOW_SINGLE_QUOTES, true)
