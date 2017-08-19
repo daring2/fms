@@ -29,6 +29,7 @@ class JsonUtilsTest: FunSpec({
 
     test("YamlMapper") {
         YamlMapper.readList<String>("[v1, 2]") shouldBe listOf("v1", "2")
+        YamlMapper.readList<String>("[1, \"2, 3\", '4, 5']") shouldBe listOf("1", "2, 3", "4, 5")
         YamlMapper.readValue<Any>("[v1, p2 : v2, 3]") shouldBe listOf(
                 "v1", mapOf("p2" to "v2"), 3
         )

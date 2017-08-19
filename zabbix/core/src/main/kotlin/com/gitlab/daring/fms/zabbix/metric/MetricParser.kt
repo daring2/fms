@@ -2,15 +2,12 @@ package com.gitlab.daring.fms.zabbix.metric
 
 import com.gitlab.daring.fms.zabbix.model.Item
 
-open class MetricParser {
+interface MetricParser {
 
-    fun getMetric(item: Item): Metric {
-        //TODO implement
-        return Metric(item.key, emptyList(), item)
-    }
+    fun getMetric(item: Item): Metric
 
     companion object {
-        val Default = MetricParser()
+        val Default = DefaultMetricParser(1024)
     }
 
 }
