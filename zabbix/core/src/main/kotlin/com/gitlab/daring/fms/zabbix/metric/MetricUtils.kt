@@ -18,7 +18,12 @@ object MetricUtils {
      */
     fun newMetricValue(m: Metric, f: () -> Any): ItemValue {
         return try {
-            ItemValue("" + f(), item = m.item)
+            val r = f()
+            when (r) {
+                is ItemValue -> r
+                is Exception -> ItemValue("$r", true, m.item)
+                else -> ItemValue("$r", false, m.item)
+            }
         } catch (e: Exception) {
             ItemValue("$e", true, m.item)
         }
