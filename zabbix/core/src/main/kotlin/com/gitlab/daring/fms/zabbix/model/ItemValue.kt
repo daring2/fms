@@ -18,7 +18,7 @@ data class ItemValue(
     
     val isError @JsonIgnore get() = state == 1
 
-    constructor(value: String, isError: Boolean, item: Item? = null): this(
+    constructor(value: String, isError: Boolean = false, item: Item? = null): this(
             item?.host ?: "",
             item?.key_orig ?: "",
             value,
