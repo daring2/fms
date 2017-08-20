@@ -25,6 +25,7 @@ class JmxMetricSupplier(
         require(m.params.size == 2, { "metric requires 2 parameters" })
         val con = connectionSupplier()
         val mbn = ObjectName(m.params[0])
+        //TODO support CompositeData
         con.getAttribute(mbn, m.params[1])
     }
 
