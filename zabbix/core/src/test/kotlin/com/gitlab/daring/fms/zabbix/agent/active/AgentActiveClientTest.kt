@@ -39,6 +39,14 @@ class AgentActiveClientTest : FunSpec({
         verify(sp.socket).close()
     }
 
+    test("sendRequest") {
+        val req1 = AgentRequest(ActiveChecks, "n1")
+        val res1 = AgentResponse(Success, data = listOf(Item("i11"), Item("i12")))
+        testRequest(req1, res1) { cl ->
+            cl.sendRequest(req1) shouldBe res1
+        }
+    }
+
     test("queryItems") {
         val req1 = AgentRequest(ActiveChecks, "n1")
         val res1 = AgentResponse(Success, data = listOf(Item("i11"), Item("i12")))

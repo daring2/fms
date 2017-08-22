@@ -24,7 +24,7 @@ class AgentActiveClient(
         return sendRequest(AgentRequest(AgentData, data = values))
     }
 
-    private fun sendRequest(req: AgentRequest): AgentResponse {
+    fun sendRequest(req: AgentRequest): AgentResponse {
         socketProvider.createSocket(serverHost, serverPort).use {
             JsonMapper.writeValue(it.getOutputStream(), req)
             return parseJsonResponse(it.getInputStream())
