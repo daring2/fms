@@ -1,4 +1,4 @@
-FMS library contains utilities and tools for monitoring and configuration managemet. It is written in Kotlin language.
+FMS library contains utilities and tools for monitoring and configuration management. It is written in Kotlin language.
 
 # zabbix-core module
 This module contains utilities for working with [Zabbix](https://www.zabbix.com/) monitoring system.
