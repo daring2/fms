@@ -10,7 +10,7 @@ class ErrorMetricSupplierTest : FunSpec({
     test("getValue") {
         val sup = ErrorMetricSupplier
         val i1 = Item("i1")
-        val v1 = sup.getValue(Metric("m1", emptyList(), i1))
+        val v1 = sup.getCurrentValue(Metric("m1", emptyList(), i1))
         v1 shouldBe ItemValue("Unsupported item key", true, i1)
     }
 

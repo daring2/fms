@@ -9,7 +9,7 @@ object MetricUtils {
      */
     fun newMetricSupplier(f: (Metric) -> ItemValue): MetricSupplier {
         return object : MetricSupplier {
-            override fun getValue(metric: Metric)= f(metric)
+            override fun getCurrentValue(metric: Metric)= f(metric)
         }
     }
 

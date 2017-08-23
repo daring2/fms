@@ -4,7 +4,7 @@ import com.gitlab.daring.fms.zabbix.model.ItemValue
 
 object ErrorMetricSupplier : MetricSupplier {
 
-    override fun getValue(metric: Metric): ItemValue {
+    override fun getCurrentValue(metric: Metric): ItemValue {
         return ItemValue("Unsupported item key", true, metric.item)
     }
 

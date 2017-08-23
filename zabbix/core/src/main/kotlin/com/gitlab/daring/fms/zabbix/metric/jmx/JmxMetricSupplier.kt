@@ -13,11 +13,11 @@ class JmxMetricSupplier(
         val connectionSupplier: () -> JmxConnection = ManagementFactory::getPlatformMBeanServer
 ) : MetricSupplier {
 
-    override fun getValue(metric: Metric): ItemValue {
+    override fun getCurrentValue(metric: Metric): ItemValue {
         //TODO implement jmx.invoke metric
         return when (metric.name) {
             "jmx.get" -> getAttribute(metric)
-            else -> ErrorMetricSupplier.getValue(metric)
+            else -> ErrorMetricSupplier.getCurrentValue(metric)
         }
     }
 

@@ -12,7 +12,7 @@ class MetricUtilsTest : FunSpec({
     test("newMetricSupplier") {
         val sup = newMetricSupplier { ItemValue(it.name + ".v") }
         val m1 = Metric("m1", emptyList())
-        sup.getValue(m1) shouldBe ItemValue("m1.v")
+        sup.getCurrentValue(m1) shouldBe ItemValue("m1.v")
     }
 
     test("newMetricValue") {

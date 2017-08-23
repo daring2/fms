@@ -10,6 +10,6 @@ interface MetricSupplier {
     /**
      * Returns current value of specified metric
      */
-    fun getValue(metric: Metric): ItemValue
+    fun getCurrentValue(metric: Metric): ItemValue
 
 }
