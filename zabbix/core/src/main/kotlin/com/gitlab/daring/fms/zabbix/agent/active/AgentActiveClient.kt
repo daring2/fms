@@ -33,7 +33,7 @@ class AgentActiveClient(
 
     companion object {
 
-        fun create(c: Config): AgentActiveClient {
+        operator fun invoke(c: Config): AgentActiveClient {
             val hp = c.getHostAndPort("server").withDefaultPort(10051)
             return AgentActiveClient(hp.host, hp.port, SocketProviderImpl(c))
         }

@@ -1,5 +1,6 @@
 package com.gitlab.daring.fms.zabbix.agent.passive
 
+import com.gitlab.daring.fms.common.config.getHostAndPort
 import com.gitlab.daring.fms.common.network.SocketProvider
 import com.gitlab.daring.fms.common.network.SocketProviderImpl
 import com.gitlab.daring.fms.zabbix.model.Item
@@ -14,10 +15,6 @@ class AgentPassiveClient(
         val port: Int = 10050,
         val socketProvider: SocketProvider = SocketProviderImpl(3000, 10000)
 ) {
-
-    constructor(c: Config) :
-            this(c.getString("host"), c.getInt("port"), SocketProviderImpl(c))
-
 
     fun request(item: Item): ItemValue {
         val socket = socketProvider.createSocket(host, port)
@@ -44,6 +41,15 @@ class AgentPassiveClient(
         }  else {
             return iv
         }
+    }
+
+    companion object {
+
+        operator fun invoke(c: Config): AgentPassiveClient {
+            val hp = c.getHostAndPort("server").withDefaultPort(10050)
+            return AgentPassiveClient(hp.host, hp.port, SocketProviderImpl(c))
+        }
+
     }
 
 }

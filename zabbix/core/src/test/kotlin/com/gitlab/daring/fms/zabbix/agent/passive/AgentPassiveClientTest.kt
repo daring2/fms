@@ -16,13 +16,18 @@ import org.mockito.Mockito.verify
 class AgentPassiveClientTest : FunSpec({
 
     test("constructors") {
-        val c = configFromString("{host=h1, port=10, connectTimeout=1s, readTimeout=2s}")
-        val sender = AgentPassiveClient(c)
-        sender.host shouldBe "h1"
-        sender.port shouldBe 10
-        val sp = sender.socketProvider as SocketProviderImpl
+        val c1 = configFromString("{server=\"h1:10\", connectTimeout=1s, readTimeout=2s}")
+        val cl1 = AgentPassiveClient(c1)
+        cl1.host shouldBe "h1"
+        cl1.port shouldBe 10
+        val sp = cl1.socketProvider as SocketProviderImpl
         sp.connectTimeout shouldBe 1000
         sp.readTimeout shouldBe 2000
+
+        val c2 = configFromString("{server=h1, connectTimeout=1s, readTimeout=2s}")
+        val cl2 = AgentPassiveClient(c2)
+        cl2.host shouldBe "h1"
+        cl2.port shouldBe 10050
     }
 
     fun testRequest(item: String, result: String, f: (AgentPassiveClient) -> Unit) {

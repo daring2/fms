@@ -14,9 +14,9 @@ import org.mockito.Mockito.verify
 
 class AgentActiveClientTest : FunSpec({
 
-    test("create") {
+    test("constructors") {
         val c1 = configFromString("{server=\"h1:10\", connectTimeout=1s, readTimeout=2s}")
-        val cl1 = AgentActiveClient.create(c1)
+        val cl1 = AgentActiveClient(c1)
         cl1.serverHost shouldBe "h1"
         cl1.serverPort shouldBe 10
         val sp = cl1.socketProvider as SocketProviderImpl
@@ -24,7 +24,7 @@ class AgentActiveClientTest : FunSpec({
         sp.readTimeout shouldBe 2000
 
         val c2 = configFromString("{server=h1, connectTimeout=1s, readTimeout=2s}")
-        val cl2 = AgentActiveClient.create(c2)
+        val cl2 = AgentActiveClient(c2)
         cl2.serverHost shouldBe "h1"
         cl2.serverPort shouldBe 10051
     }
