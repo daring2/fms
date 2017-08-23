@@ -12,4 +12,11 @@ interface MetricSupplier {
      */
     fun getCurrentValue(metric: Metric): ItemValue
 
+    /**
+     * Returns values for specified metrics
+     */
+    fun getValues(metris: List<Metric>): List<ItemValue> {
+        return metris.map(this::getCurrentValue)
+    }
+
 }
